@@ -54,15 +54,15 @@ main (int argc, char *argv[])
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
   //
-#if 0
+//#if 0
   LogComponentEnable ("Ipv4L3Protocol", LOG_LEVEL_ALL);
   LogComponentEnable ("UdpL4Protocol", LOG_LEVEL_ALL);
   LogComponentEnable ("UdpSocketImpl", LOG_LEVEL_ALL);
   LogComponentEnable ("NetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("Ipv4EndPointDemux", LOG_LEVEL_ALL);
-#endif
+//#endif
 
-#if 0
+//#if 0
   LogComponentEnable ("YoungdsrOptions", LOG_LEVEL_ALL);
   LogComponentEnable ("YoungdsrHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("YoungdsrRouting", LOG_LEVEL_ALL);
@@ -75,7 +75,7 @@ main (int argc, char *argv[])
   LogComponentEnable ("YoungdsrRreqTable", LOG_LEVEL_ALL);
   LogComponentEnable ("YoungdsrErrorBuffer", LOG_LEVEL_ALL);
   LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
-#endif
+//#endif
 
   NS_LOG_INFO ("creating the nodes");
 
@@ -214,6 +214,7 @@ main (int argc, char *argv[])
       anim.EnableIpv4L3ProtocolCounters(Seconds(0),Seconds(600));
 
   NS_LOG_INFO ("Run Simulation.");
+  //pointToPoint.EnablePcapAll("dsrgoodp");
   Simulator::Stop (Seconds (TotalTime));
   Simulator::Run ();
   Simulator::Destroy ();

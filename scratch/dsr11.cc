@@ -132,7 +132,7 @@ LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
 
   //mobility parameters
   double pauseTime = 0.0;
-  double nodeSpeed = 20.0;
+  double nodeSpeed = 0.0;
   double txpDistance = 250.0;
 
   std::string rate = "0.512kbps";
