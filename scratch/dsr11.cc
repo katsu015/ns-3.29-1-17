@@ -151,7 +151,7 @@ LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
   cmd.AddValue ("rtslimit", "RTS/CTS Threshold (bytes)", rtslimit);
   cmd.Parse (argc, argv);
 
-  SeedManager::SetSeed (2);
+  SeedManager::SetSeed (1);
   SeedManager::SetRun (5);
 
   NodeContainer adhocNodes;
@@ -260,7 +260,7 @@ LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
 
   anim.EnableIpv4L3ProtocolCounters(Seconds(0),Seconds(600));
 
-
+wifiPhy.EnablePcapAll("dsr11p");
 //pointToPoint.EnableAsciiAll (ascii.CreateFileStream ("myfirs.tr"));
 
 

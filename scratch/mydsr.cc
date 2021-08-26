@@ -37,8 +37,8 @@
 #include "ns3/mobility-module.h"
 #include "ns3/config-store-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/youngdsr-module.h"
-//#include "ns3/dsr-module.h"
+//#include "ns3/youngdsr-module.h"
+#include "ns3/dsr-module.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/netanim-module.h"
 
@@ -65,7 +65,7 @@ int main (int argc, char *argv[])
   */
 //#endif
 
-//#if 0
+#if 0
  LogComponentEnable ("YoungdsrOptions", LOG_LEVEL_FUNCTION);
 /*  LogComponentEnable ("DsrHelper", LOG_LEVEL_ALL);
 */
@@ -82,7 +82,7 @@ int main (int argc, char *argv[])
   LogComponentEnable ("DsrErrorBuffer", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrNetworkQueue", LOG_LEVEL_ALL);
   */
-//#endif
+#endif
 
   NS_LOG_INFO ("creating the nodes");
 
@@ -100,7 +100,7 @@ int main (int argc, char *argv[])
   //mobility parameters
   double pauseTime = 0.0;
   double nodeSpeed = 20.0;
-  double txpDistance = 250.0;
+  double txpDistance = 150.0;
 
   std::string rate = "0.512kbps";
   std::string dataMode ("DsssRate11Mbps");
@@ -116,7 +116,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("packetSize", "The packet size", packetSize);
   cmd.AddValue ("txpDistance", "Specify node's transmit range, Default:300", txpDistance);
   cmd.AddValue ("pauseTime", "pauseTime for mobility model, Default: 0", pauseTime);
-  cmd.AddValue ("rtslimit", "RTS/CTS Threshold (bytes)", rtslimit);
+//  cmd.AddValue ("rtslimit", "RTS/CTS Threshold (bytes)", rtslimit);
   cmd.Parse (argc, argv);
 
   SeedManager::SetSeed (8);
@@ -128,7 +128,7 @@ int main (int argc, char *argv[])
 
   NS_LOG_INFO ("setting the default phy and channel parameters");
   Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode", StringValue (phyMode));
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("rtslimit"));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue (rtslimit));
   // disable fragmentation for frames below 2200 bytes
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
 
@@ -202,10 +202,10 @@ int main (int argc, char *argv[])
 
   InternetStackHelper internet;
 
-  //DsrMainHelper dsrMain;
-  YoungdsrMainHelper dsrMain;
-  //DsrHelper dsr;
-  YoungdsrHelper dsr;
+  DsrMainHelper dsrMain;
+  //YoungdsrMainHelper dsrMain;
+  DsrHelper dsr;
+  //YoungdsrHelper dsr;
 
   internet.Install (adhocNodes);
   dsrMain.Install (dsr, adhocNodes);
@@ -315,6 +315,7 @@ int main (int argc, char *argv[])
 
 
   NS_LOG_INFO ("Run Simulation.");
+    wifiPhy.EnablePcapAll("mydsrp");
   Simulator::Stop (Seconds (TotalTime));
 /*
   AnimationInterface anim(animFile);

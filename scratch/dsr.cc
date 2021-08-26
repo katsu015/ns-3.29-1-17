@@ -215,6 +215,7 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Stop (Seconds (TotalTime));
+  wifiPhy.EnablePcapAll("dsrp");
   Simulator::Run ();
   Simulator::Destroy ();
 }
