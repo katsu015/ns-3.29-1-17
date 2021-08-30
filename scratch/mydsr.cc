@@ -89,6 +89,7 @@ int main (int argc, char *argv[])
   // General parameters
   uint32_t nWifis = 13;
   uint32_t nSinks = 4;
+  uint32_t seed = 1;
   //ソースノードの数
 //  uint32_t nSources = 5;
   double TotalTime = 500.0;
@@ -100,7 +101,7 @@ int main (int argc, char *argv[])
   //mobility parameters
   double pauseTime = 0.0;
   double nodeSpeed = 20.0;
-  double txpDistance = 150.0;
+  double txpDistance = 250.0;
 
   std::string rate = "0.512kbps";
   std::string dataMode ("DsssRate11Mbps");
@@ -109,6 +110,7 @@ int main (int argc, char *argv[])
 
   //Allow users to override the default parameters and set it to new ones from CommandLine.
   CommandLine cmd;
+  cmd.AddValue ("seed", "set seed", seed);
   cmd.AddValue ("nWifis", "Number of wifi nodes", nWifis);
   cmd.AddValue ("nSinks", "Number of SINK traffic nodes", nSinks);
   cmd.AddValue ("rate", "CBR traffic rate(in kbps), Default:8", rate);
@@ -119,7 +121,7 @@ int main (int argc, char *argv[])
 //  cmd.AddValue ("rtslimit", "RTS/CTS Threshold (bytes)", rtslimit);
   cmd.Parse (argc, argv);
 
-  SeedManager::SetSeed (8);
+  SeedManager::SetSeed (seed);
   SeedManager::SetRun (5);
 
   NodeContainer adhocNodes;
@@ -153,8 +155,8 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Configure Tracing.");
 
   AsciiTraceHelper ascii;
-  Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("dsrtest.tr");
-  wifiPhy.EnableAsciiAll (stream);
+  //Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("dsrtest.tr");
+  //wifiPhy.EnableAsciiAll (stream);
 
   MobilityHelper adhocMobility;
   ObjectFactory pos;
@@ -317,7 +319,7 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Run Simulation.");
     wifiPhy.EnablePcapAll("mydsrp");
   Simulator::Stop (Seconds (TotalTime));
-/*
+
   AnimationInterface anim(animFile);
   for (uint32_t i = 0; i < nWifis; ++i)
     {
@@ -326,7 +328,7 @@ int main (int argc, char *argv[])
   anim.EnablePacketMetadata();
   anim.EnableIpv4L3ProtocolCounters(Seconds(0),Seconds(500));
 
-*/
+
 
   Simulator::Run ();
   Simulator::Destroy ();
