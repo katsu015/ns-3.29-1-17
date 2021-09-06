@@ -787,7 +787,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       }
       */
       //マックアドレスは１０進数に変換してマイナス１でID
-
+/*
       if ("00:00:00:00:00:28" == m_currentHdr.GetAddr1 ()) {
         CTScount2++;
         std::cout <<"macLow:cts:id:39 " << CTScount2 << '\n';
@@ -801,7 +801,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       //  outputfile.close();
 
       }
-
+*/
       //Simulator::Schedule(Seconds(600),&MacLow::ResultWriter,CTScount3);
       SnrTag tag;
       packet->RemovePacketTag (tag);
@@ -1628,6 +1628,7 @@ MacLow::SendRtsForPacket (void)
     std::cout << RTScount2 << '\n';
   }
   */
+  /*
   if ("00:00:00:00:00:28" == m_currentHdr.GetAddr1 ()) {
     std::cout << "countRTS:id:39" << '\n';
     RTScount2++;
@@ -1649,6 +1650,7 @@ MacLow::SendRtsForPacket (void)
   outputfile << RTScount4 <<"\n";
 //outputfile.close();
   }
+
   if ("00:00:00:00:00:02" == m_currentHdr.GetAddr1 ()) {
     //std::cout << "countRTS:id:7" << '\n';
     outputfile << "\ncountRTS:id:1 from "<< m_self << " at "<< Simulator::Now ().GetMicroSeconds () <<"\n";
@@ -1665,6 +1667,7 @@ MacLow::SendRtsForPacket (void)
   outputfile << RTScount6 <<"\n";
 //outputfile.close();
   }
+  */
   NS_LOG_FUNCTION (this);
   /* send an RTS for this packet. */
   WifiMacHeader rts;
