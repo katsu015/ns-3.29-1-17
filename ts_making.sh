@@ -27,7 +27,7 @@ do
   #./waf --run "mydsr --seed=$Seed"
   for filenum in $(seq 0 $Finish_filenum);
   do
-    tshark -r "mydsrp-$filenum-0.pcap" -Y "wlan.fc.type_subtype == 0x001b and wlan.ra==00:00:00:00:00:08" -T fields -E header=y -E separator=',' -e "frame.number" -e "frame.time_relative" -e "wlan.ra" -e "wlan.ta" > "mydsrp-seed$Seed-node$filenum.csv"
+    tshark -r "mydsrp-$filenum-0.pcap" -Y "wlan.fc.type_subtype == 0x001b and wlan.ta==00:00:00:00:00:08" -T fields -E header=n -E separator=',' -e "frame.number" -e "frame.time_relative" -e "wlan.ra" -e "wlan.ta" > "mydsrp-seed$Seed-node$filenum.csv"
   done
     cat "mydsrp-seed$Seed-node"*.csv | head -n 1 > "all$Seed.csv" && find -name "mydsrp-seed$Seed-node*.csv" -exec sed -e '1d' {} \; >> "all$Seed.csv"
   Seed=`echo "$Seed+1" | bc`

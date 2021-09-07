@@ -15,21 +15,27 @@ Seed=1
 # Seed=$input_s_seed
 Finish_Seed=10
 filenum=0
-Finish_filenum=49
+Finish_filenum=9
 while true
 do
   echo 'simulation run seed'
   echo $Seed
   if [ $Seed -eq $Finish_Seed ]; then
+    : > alldsrp.csv
+    for Seed in $(seq 1 $Finish_filenum);
+      do
+         wc -l < dsrp-seed$Seed-node7.csv >> "alldsrp.csv"
+      done
     exit 0
   fi
   #./waf build
   ./waf --run "dsr --seed=$Seed"
-  for filenum in $(seq 0 $Finish_filenum);
-  do
-    tshark -r "dsrp-$filenum-0.pcap" -Y "wlan.fc.type_subtype == 0x001b and wlan.ta==00:00:00:00:00:08" -T fields -E header=y -E separator=',' -e "frame.number" -e "frame.time_relative" -e "wlan.ta" -e "wlan.ra" > "dsrp-seed$Seed-node$filenum.csv"
-  done
-  cat "dsrp-seed$Seed-node"*.csv | head -n 1 > "alldsrp$Seed.csv" && find -name "dsrp-seed$Seed-node*.csv" -exec sed -e '1d' {} \; >> "alldsrp$Seed.csv"
+#  for filenum in $(seq 0 $Finish_filenum);
+#  do
+#    tshark -r "dsrp-$filenum-0.pcap" -Y "wlan.fc.type_subtype == 0x001b and wlan.ta==00:00:00:00:00:08" -T fields -E header=y -E separator=',' -e "frame.number" -e "frame.time_relative" -e "wlan.ta" -e "wlan.ra" > "dsrp-seed$Seed-node$filenum.csv"
+#  done
+#  cat "dsrp-seed$Seed-node"*.csv | head -n 1 > "alldsrp$Seed.csv" && find -name "dsrp-seed$Seed-node*.csv" -exec sed -e '1d' {} \; >> "alldsrp$Seed.csv"
+  tshark -r "dsrp-7-0.pcap" -Y "wlan.fc.type_subtype == 0x001b and wlan.ta==00:00:00:00:00:08" -T fields -E header=n -E separator=',' -e "frame.number" -e "frame.time_relative" -e "wlan.ta" -e "wlan.ra" > "dsrp-seed$Seed-node7.csv"
   Seed=`echo "$Seed+1" | bc`
 
 done
