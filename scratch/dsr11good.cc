@@ -109,6 +109,7 @@ LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
   double ppers = 1;
   uint32_t packetSize = 64;
   double dataStart = 100.0; // start sending data at 100s
+  uint32_t seed = 1;
 
   //mobility parameters
   double pauseTime = 0.0;
@@ -122,6 +123,7 @@ LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
   std::string rtslimit = "0";
   //Allow users to override the default parameters and set it to new ones from CommandLine.
   CommandLine cmd;
+  cmd.AddValue ("seed", "set seed", seed);
   cmd.AddValue ("nWifis", "Number of wifi nodes", nWifis);
   cmd.AddValue ("nSinks", "Number of SINK traffic nodes", nSinks);
   cmd.AddValue ("rate", "CBR traffic rate(in kbps), Default:8", rate);
@@ -133,7 +135,7 @@ LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
   cmd.Parse (argc, argv);
 
 
-  SeedManager::SetSeed (7);
+  SeedManager::SetSeed (seed);
   SeedManager::SetRun (5);
 
   NodeContainer adhocNodes;
