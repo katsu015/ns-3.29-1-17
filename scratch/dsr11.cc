@@ -37,7 +37,7 @@
 #include "ns3/config-store-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/youngdsr-module.h"
-#include "ns3/dsr-module.h"
+//#include "ns3/dsr-module.h"
 #include "ns3/yans-wifi-helper.h"
 
 #include "ns3/netanim-module.h"
@@ -69,7 +69,7 @@ CourseChange (std::string context, Ptr<const MobilityModel> model)
 int
 main (int argc, char *argv[])
 {
-    std::string animFile = "dsr11test.xml";
+  //  std::string animFile = "dsr11test.xml";
   //
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
@@ -133,7 +133,7 @@ LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
 
   //mobility parameters
   double pauseTime = 0.0;
-  double nodeSpeed = 0.0;
+  double nodeSpeed = 20.0;
   double txpDistance = 250.0;
 
   std::string rate = "0.512kbps";
@@ -249,18 +249,18 @@ LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
       apps1.Stop (Seconds (dataTime + i * randomStartTime));
     }
 
+/*
+      AnimationInterface anim(animFile);
+      for (uint32_t i = 0; i < nWifis; ++i)
+        {
+          anim.UpdateNodeSize(i,10,10);
+        }
+      anim.EnablePacketMetadata();
+
+      anim.EnableIpv4L3ProtocolCounters(Seconds(0),Seconds(600));
+*/
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Stop (Seconds (TotalTime));
-
-
-  AnimationInterface anim(animFile);
-  for (uint32_t i = 0; i < nWifis; ++i)
-    {
-      anim.UpdateNodeSize(i,10,10);
-    }
-  anim.EnablePacketMetadata();
-
-  anim.EnableIpv4L3ProtocolCounters(Seconds(0),Seconds(600));
 
 wifiPhy.EnablePcapAll("dsr11p");
 //pointToPoint.EnableAsciiAll (ascii.CreateFileStream ("myfirs.tr"));

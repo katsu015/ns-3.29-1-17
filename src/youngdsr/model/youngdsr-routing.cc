@@ -3394,7 +3394,7 @@ YoungdsrRouting::Receive (Ptr<Packet> p,
       BlackList *blackList = m_rreqTable->FindUnidirectional (src);
       if (blackList)
         {
-          std::cout << "パケットドロップ：アンディレクショナルなリンク" << '\n';
+          ////std::cout << "パケットドロップ：アンディレクショナルなリンク" << '\n';
           NS_LOG_INFO ("Discard this packet due to unidirectional link");
           m_dropTrace (p);
         }
@@ -3440,7 +3440,7 @@ YoungdsrRouting::Receive (Ptr<Packet> p,
 
       if (GetIDfromIP(m_mainAddress) == m_malicious) {
         mfailed++;
-        std::cout << "残念！" << mfailed << '\n';
+        ////std::cout << "残念！" << mfailed << '\n';
       }
 
       /***if (GetIDfromIP(m_mainAddress) == 23) {
@@ -3463,11 +3463,11 @@ YoungdsrRouting::Receive (Ptr<Packet> p,
     {
       if (GetIDfromIP(m_mainAddress) == m_malicious) {
         mcorrect++;
-        std::cout << "M:成功！" << mcorrect<<  correctc << '\n';
+      ////  std::cout << "M:成功！" << mcorrect<<  correctc << '\n';
       }
       if (GetIDfromIP(m_mainAddress) == 33) {
         correctc++;
-        std::cout << "normal:成功！" << correctc << '\n';
+      ////  std::cout << "normal:成功！" << correctc << '\n';
       }
       youngdsrOption = GetOption (optionType);
       optionLength = youngdsrOption->Process (p, packet, m_mainAddress, source, ip, protocol, isPromisc, promiscSource);
