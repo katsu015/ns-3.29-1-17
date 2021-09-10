@@ -239,6 +239,7 @@ LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
     }
   anim.EnablePacketMetadata();
   anim.EnableIpv4L3ProtocolCounters(Seconds(0),Seconds(500));
+  wifiPhy.EnablePcapAll("dsr11np");
 
   Simulator::Run ();
   Simulator::Destroy ();
