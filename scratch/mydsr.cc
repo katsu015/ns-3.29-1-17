@@ -90,6 +90,7 @@ int main (int argc, char *argv[])
   uint32_t nWifis = 13;
   uint32_t nSinks = 4;
   uint32_t seed = 1;
+  uint32_t Runset = 1;
   //ソースノードの数
 //  uint32_t nSources = 5;
   double TotalTime = 500.0;
@@ -111,6 +112,7 @@ int main (int argc, char *argv[])
   //Allow users to override the default parameters and set it to new ones from CommandLine.
   CommandLine cmd;
   cmd.AddValue ("seed", "set seed", seed);
+  cmd.AddValue ("Runset", "set Run", Runset);
   cmd.AddValue ("nWifis", "Number of wifi nodes", nWifis);
   cmd.AddValue ("nSinks", "Number of SINK traffic nodes", nSinks);
   cmd.AddValue ("rate", "CBR traffic rate(in kbps), Default:8", rate);
@@ -122,7 +124,7 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   SeedManager::SetSeed (seed);
-  SeedManager::SetRun (5);
+  SeedManager::SetRun (Runset);
 
   NodeContainer adhocNodes;
   adhocNodes.Create (nWifis);

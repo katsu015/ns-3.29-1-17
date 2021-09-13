@@ -30,8 +30,7 @@ do
     Seed=1
   fi
   if [ $Runset -eq $Finish_Runset ]; then
-    : > all${Scenario}p.csv
-    paste -d , all${Scenario}p-run[${Seed}-${Finish_Runset}].csv > all${Scenario}p.csv
+  paste -d , all${Scenario}p-run[${Seed}-$((Finish_filenum-1))].csv all${Scenario}p-run${Finish_filenum}.csv > "all${Scenario}p.csv"
     exit 0
   fi
   echo 'simulation run seed'
