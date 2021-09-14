@@ -17,7 +17,7 @@ Finish_Seed=11
 filenum=0
 Finish_filenum=10
 Runset=1
-Finish_Runset=11
+Finish_Runset=3
 while true
 do
 
@@ -29,8 +29,8 @@ do
     Runset=`echo "$Runset+1" | bc`
     Seed=1
   fi
-  if [ $Runset -eq $Finish_Runset ]; then
-  paste -d , all${Scenario}p-run[${Seed}-$((Finish_filenum-1))].csv all${Scenario}p-run${Finish_filenum}.csv > "all${Scenario}p.csv"
+  if [ $Runset -eq $((Finish_Runset-1)) ]; then
+  paste -d , all${Scenario}p-run[${Seed}-$((Finish_Runset-1))].csv all${Scenario}p-run${Finish_Runset}.csv > "all${Scenario}p.csv"
     exit 0
   fi
   echo 'simulation run seed'
