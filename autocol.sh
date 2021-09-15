@@ -29,7 +29,7 @@ do
     Runset=`echo "$Runset+1" | bc`
     Seed=1
   fi
-  if [ $Runset -eq $((Finish_Runset-1)) ]; then
+  if [ $Runset -eq $((Finish_Runset+1)) ]; then
   paste -d , all${Scenario}p-run[${Seed}-$((Finish_Runset-1))].csv all${Scenario}p-run${Finish_Runset}.csv > "all${Scenario}p.csv"
     exit 0
   fi

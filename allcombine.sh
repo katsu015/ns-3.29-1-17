@@ -5,7 +5,7 @@ read Scenario
 # Seed=$input_s_seed
 Finish_Seed=11
 filenum=0
-Finish_filenum=10
+Finish_filenum=3
 Runset=1
-Finish_Runset=11
+Finish_Runset=3
 paste -d , all${Scenario}p-run[${Seed}-$((Finish_filenum-1))].csv all${Scenario}p-run${Finish_filenum}.csv > "all${Scenario}p.csv"
