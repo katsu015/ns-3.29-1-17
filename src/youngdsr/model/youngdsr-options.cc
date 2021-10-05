@@ -556,7 +556,7 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
   uint8_t buf[2];
   p->CopyData (buf, sizeof(buf));
   uint8_t numberAddress = (buf[1] - 6) / 4;
-    outputfile <<" numberaddress "<< (uint32_t)numberAddress <<  "\n" ;
+//    outputfile <<" numberaddress "<< (uint32_t)numberAddress <<  "\n" ;
 
   NS_LOG_DEBUG ("The number of Ip addresses " << (uint32_t)numberAddress);
   if (numberAddress >= 255)
@@ -841,7 +841,7 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
                 /*
                  * 送信バッファからデータパケットを送信します
                  */
-                // std::cout <<"nexthop = " << nextHop << '\n';
+                //std::cout <<"nexthop = " << nextHop << '\n';
              youngdsr->SendPacketFromBuffer (sourceRoute, nextHop, protocol);
                 // //データパケットを送信した後、宛先のルート要求タイマーをキャンセルします
                 youngdsr->CancelRreqTimer (dst, true);

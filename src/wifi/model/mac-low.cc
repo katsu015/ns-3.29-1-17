@@ -793,15 +793,15 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
         std::cout <<"macLow:cts:id:39 " << CTScount2 << '\n';
 
       }
-
+*/
       if ("00:00:00:00:00:08" == m_currentHdr.GetAddr1 ()) {
         CTScount3++;
-        outputfile <<"macLow:cts:id:7 From " << hdr.GetAddr2 () << " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
+        outputfile <<"macLow:cts From id7" << m_currentHdr.GetAddr1 () << " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
         outputfile  << CTScount3 <<"\n";
       //  outputfile.close();
 
       }
-*/
+
       //Simulator::Schedule(Seconds(600),&MacLow::ResultWriter,CTScount3);
       SnrTag tag;
       packet->RemovePacketTag (tag);

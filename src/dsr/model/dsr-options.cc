@@ -662,7 +662,7 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
                 {
                   m_finalRoute.push_back (*i);  // Get the full route from source to destination
                 }
-                outputfile << "/finalroute/ idはipv4addressの末尾から-1した数" << '\n';
+                outputfile << "正常/finalroute/ idはipv4addressの末尾から-1した数" << '\n';
                 for (std::vector<Ipv4Address>::iterator i = m_finalRoute.begin (); i != m_finalRoute.end (); ++i)
                   {
 

@@ -319,7 +319,7 @@ int main (int argc, char *argv[])
 
 
   NS_LOG_INFO ("Run Simulation.");
-    wifiPhy.EnablePcapAll("mydsrp11");
+    wifiPhy.EnablePcapAll("mydsr11p");
   Simulator::Stop (Seconds (TotalTime));
 /*
   AnimationInterface anim(animFile);
