@@ -70,6 +70,7 @@ u_int32_t sendACKcount = 0;
 u_int32_t malicious = 7;
 u_int32_t malicious2 = 8;
 u_int32_t malicious3 = 9;
+u_int32_t erraddress = 3;
 u_int32_t dropcount = 0;
 //u_int32_t sendtomcount = 0;
 double perc = 0.25;
@@ -875,6 +876,10 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
           std::cout << "現在のノードは　" << ipv4Address << '\n';
           std::cout << "宛先ノードは　" << targetAddress << '\n';
           */
+          if (GetIDfromIP (ipv4Address) == malicious)
+          {
+          outputfile << "mali" << '\n';
+        }
 
           Ipv4Address nextHop; // 使用するネクストホップアドレスを宣言する
           if (nodeList.size () == 1)
@@ -1039,6 +1044,10 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
        */
       else if (isRouteInCache && !areThereDuplicates)
         {
+          if (GetIDfromIP (ipv4Address) == malicious)
+          {
+          outputfile << "mali(2)" << '\n';
+        }
         //  std::cout << "/* ヘッダーとルートキャッシュの処理 */" << '\n';
           m_finalRoute.clear ();                // Clear the final route vector
           /**
@@ -1171,6 +1180,13 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
        */
       else
         {
+
+
+            if (GetIDfromIP (ipv4Address) == malicious)
+            {
+            outputfile << "malicheckaerror" << '\n';
+          }
+
           mainVector.push_back (ipv4Address);
           NS_ASSERT (mainVector.front () == source);
           NS_LOG_DEBUG ("Print out the main vector");
@@ -1240,6 +1256,7 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
             }
           return rreq.GetSerializedSize ();
         }
+
     }
   //unreachable:  return rreq.GetSerializedSize ();
 }
@@ -1633,6 +1650,15 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
             *それ以外の場合は、srcAddressを使用します
            */
           Ipv4Address ackAddress = srcAddress;
+          if (GetIDfromIP (ipv4Address) == malicious)
+          {
+            m_ipv4Route = SetRoute (ackAddress, ipv4Address);
+            NS_LOG_DEBUG ("Send back ACK to the earlier hop " << ackAddress << " from us " << ipv4Address);
+            youngdsr->SendAck (ackId, ackAddress, source, destination, protocol, m_ipv4Route);
+            sendACKcount++;
+            outputfile << "Send back ACK to the earlier hop " << ackAddress << " from us " << ipv4Address << '\n';
+            outputfile << "sendACKした回数" << sendACKcount++ << '\n';
+          }
           if (!nodeList.empty ())
             {
               if (segsLeft > numberAddress)   // segmentLeftフィールドは、IPアドレスの合計数を超えてはなりません。
@@ -1653,7 +1679,8 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
           m_ipv4Route = SetRoute (ackAddress, ipv4Address);
           NS_LOG_DEBUG ("Send back ACK to the earlier hop " << ackAddress << " from us " << ipv4Address);
           youngdsr->SendAck (ackId, ackAddress, source, destination, protocol, m_ipv4Route);
-          sendACKcount++;
+          outputfile << "Send back ACK to the earlier hop " << ackAddress << " from us " << ipv4Address << '\n';
+          ////sendACKcount++;
         //  std::cout << "sendACKした回数" << sendACKcount++ << '\n';
         }
       /*
@@ -1709,15 +1736,13 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
       if(GetIDfromIP(ipv4Address) == malicious)
         {
           dropcount++;
-        //  std::cout << "/*Mノードにパケットが届いた　ドロップ */"<<dropcount<< "回目"<< '\n';
-      //// proba = perc; // 確率（1%）
-      //// srand((unsigned)time(NULL)); // 乱数の初期化
-
-    ///if ( (double)rand()/RAND_MAX < proba ) {
-        m_dropTrace (packet);
-    ////}
-
-
+          outputfile << "/*Mノードにパケットが届いた　ドロップ */"<<dropcount<< "回目"<< '\n';
+          //// proba = perc; // 確率（1%）
+          //// srand((unsigned)time(NULL)); // 乱数の初期化
+          ///if ( (double)rand()/RAND_MAX < proba ) {
+          m_dropTrace (packet);
+          return 0;
+          ////}
         }
       if (ipv4Address == nextHop)
         {
@@ -1778,6 +1803,8 @@ uint8_t YoungdsrOptionRerr::GetOptionNumber () const
 
 uint8_t YoungdsrOptionRerr::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource)
 {
+  outputfile << ipv4Address << '\n';
+
   NS_LOG_FUNCTION (this << packet << youngdsrP << ipv4Address << source << ipv4Header << (uint32_t)protocol << isPromisc);
   Ptr<Packet> p = packet->Copy ();
   uint32_t size = p->GetSize ();
@@ -1808,6 +1835,12 @@ uint8_t YoungdsrOptionRerr::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
       Ipv4Address errorSource = rerrUnreach.GetErrorSrc ();
 
       NS_LOG_DEBUG ("The error source is " <<  rerrUnreach.GetErrorDst () << "and the unreachable node is " << unreachAddress);
+      if (GetIDfromIP (ipv4Address) == 3)
+      {
+      outputfile << "rerrmali" << '\n';
+    }
+
+      outputfile << "rerr"<< rerrUnreach.GetErrorSrc ()<<" " <<rerrUnreach.GetUnreachNode ()<<" "<< rerrUnreach.GetErrorDst () << '\n';
       /*
        * rerrヘッダーのシリアル化されたサイズを取得します
        */

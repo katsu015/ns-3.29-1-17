@@ -238,7 +238,7 @@ int main (int argc, char *argv[])
       onoff1.SetAttribute ("PacketSize", UintegerValue (packetSize));
       onoff1.SetAttribute ("DataRate", DataRateValue (DataRate (rate)));
 
-      ApplicationContainer apps1 = onoff1.Install (adhocNodes.Get (0));
+      ApplicationContainer apps1 = onoff1.Install (adhocNodes.Get (i));
       apps1.Start (Seconds (dataStart + 9 * randomStartTime));
       apps1.Stop (Seconds (dataTime + 9 * randomStartTime));
     }

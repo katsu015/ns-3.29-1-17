@@ -94,7 +94,7 @@ int main (int argc, char *argv[])
   double TotalTime = 500.0;
   double dataTime = 500.0;
   double ppers = 1;
-  uint32_t packetSize = 64;
+  uint32_t packetSize = 512;
   double dataStart = 0.0; // start sending data at 100s
   uint32_t seed = 1;
   uint32_t Runset = 1;
@@ -107,7 +107,7 @@ int main (int argc, char *argv[])
   std::string rate = "0.512kbps";
   std::string dataMode ("DsssRate11Mbps");
   std::string phyMode ("DsssRate11Mbps");
-  std::string rtslimit = "0";
+  std::string rtslimit = "512";
 
   //Allow users to override the default parameters and set it to new ones from CommandLine.
   CommandLine cmd;
@@ -238,7 +238,7 @@ int main (int argc, char *argv[])
       onoff1.SetAttribute ("PacketSize", UintegerValue (packetSize));
       onoff1.SetAttribute ("DataRate", DataRateValue (DataRate (rate)));
 
-      ApplicationContainer apps1 = onoff1.Install (adhocNodes.Get (0));
+      ApplicationContainer apps1 = onoff1.Install (adhocNodes.Get (i));
       apps1.Start (Seconds (dataStart + 9 * randomStartTime));
       apps1.Stop (Seconds (dataTime + 9 * randomStartTime));
     }

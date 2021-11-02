@@ -52,7 +52,7 @@ do
 #  done
 #  cat "${Scenario}p-seed$Seed-node"*.csv | head -n 1 > "all${Scenario}p$Seed.csv" && find -name "${Scenario}p-seed$Seed-node*.csv" -exec sed -e '1d' {} \; >> "all${Scenario}p$Seed.csv"
   tshark -r "${Scenario}p-7-0.pcap" -Y "wlan.fc.type_subtype == 0x001b and wlan.ra==00:00:00:00:00:08" -T fields -E header=n -E separator=',' -e "frame.number" -e "frame.time_relative" -e "wlan.ta" -e "wlan.ra" > "${Scenario}p-seed$Seed-node7.csv"
-  tshark -r "${Scenario}p-12-0.pcap" -Y "wlan.fc.type_subtype == 0x001b and wlan.ra==00:00:00:00:00:08" -T fields -E header=n -E separator=',' -e "frame.number" -e "frame.time_relative" -e "wlan.ta" -e "wlan.ra" > "${Scenario}p-seed$Seed-node12.csv"
+  tshark -r "${Scenario}p-12-0.pcap" -Y "wlan.fc.type_subtype == 0x001b and wlan.ra==00:00:00:00:00:0c" -T fields -E header=n -E separator=',' -e "frame.number" -e "frame.time_relative" -e "wlan.ta" -e "wlan.ra" > "${Scenario}p-seed$Seed-node12.csv"
 
   awk -F "," '{print $3}' "${Scenario}p-seed$Seed-node7.csv" | sort -n | uniq > "rtcheck${Scenario}p-seed$Seed-run$Runset-node7.csv"
   awk -F "," '{print $3}' "${Scenario}p-seed$Seed-node12.csv" | sort -n | uniq > "rtcheck${Scenario}p-seed$Seed-run$Runset-node12.csv"
