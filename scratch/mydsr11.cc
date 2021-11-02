@@ -275,9 +275,9 @@ int main (int argc, char *argv[])
       onoff3.SetAttribute ("PacketSize", UintegerValue (packetSize));
       onoff3.SetAttribute ("DataRate", DataRateValue (DataRate (rate)));
 
-      ApplicationContainer apps2 = onoff3.Install (adhocNodes.Get (i));
-      apps2.Start (Seconds (dataStart + 11 * randomStartTime));
-      apps2.Stop (Seconds (dataTime + 11 * randomStartTime));
+      ApplicationContainer apps3 = onoff3.Install (adhocNodes.Get (i));
+      apps3.Start (Seconds (dataStart + 11 * randomStartTime));
+      apps3.Stop (Seconds (dataTime + 11 * randomStartTime));
     }
 
     PacketSinkHelper sink4 ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
@@ -293,9 +293,9 @@ int main (int argc, char *argv[])
       onoff4.SetAttribute ("PacketSize", UintegerValue (packetSize));
       onoff4.SetAttribute ("DataRate", DataRateValue (DataRate (rate)));
 
-      ApplicationContainer apps2 = onoff4.Install (adhocNodes.Get (i));
-      apps2.Start (Seconds (dataStart + 12 * randomStartTime));
-      apps2.Stop (Seconds (dataTime + 12 * randomStartTime));
+      ApplicationContainer apps4 = onoff4.Install (adhocNodes.Get (i));
+      apps4.Start (Seconds (dataStart + 12 * randomStartTime));
+      apps4.Stop (Seconds (dataTime + 12 * randomStartTime));
     }
 
   //  }

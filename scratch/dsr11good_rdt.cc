@@ -107,7 +107,7 @@ LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
   double TotalTime = 600.0;
   double dataTime = 500.0;
   double ppers = 1;
-  uint32_t packetSize = 64;
+  uint32_t packetSize = 512;;
   double dataStart = 100.0; // start sending data at 100s
   uint32_t seed = 1;
   uint32_t Runset = 1;
@@ -121,7 +121,7 @@ LogComponentEnable ("YoungdsrNetworkQueue", LOG_LEVEL_ALL);
   std::string rate = "0.512kbps";
   std::string dataMode ("DsssRate11Mbps");
   std::string phyMode ("DsssRate11Mbps");
-  std::string rtslimit = "0";
+  std::string rtslimit = "512";
   //Allow users to override the default parameters and set it to new ones from CommandLine.
   CommandLine cmd;
   cmd.AddValue ("seed", "set seed", seed);

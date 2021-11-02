@@ -1486,6 +1486,7 @@ uint8_t DsrOptionRerr::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
       Ipv4Address errorSource = rerrUnreach.GetErrorSrc ();
 
       NS_LOG_DEBUG ("The error source is " <<  rerrUnreach.GetErrorDst () << "and the unreachable node is " << unreachAddress);
+      outputfile << "rerr"<< rerrUnreach.GetErrorSrc ()<<" " <<rerrUnreach.GetUnreachNode ()<<" "<< rerrUnreach.GetErrorDst () << '\n';
       /*
        * Get the serialized size of the rerr header
        */
