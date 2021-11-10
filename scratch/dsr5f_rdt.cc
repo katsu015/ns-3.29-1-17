@@ -212,11 +212,12 @@ main (int argc, char *argv[])
       onoff1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
       onoff1.SetAttribute ("PacketSize", UintegerValue (packetSize));
       onoff1.SetAttribute ("DataRate", DataRateValue (DataRate (rate)));
-      
-      ApplicationContainer apps1 = onoff1.Install (adhocNodes.Get (i + nWifis - nSinks));
-      apps1.Start (Seconds (dataStart + i * randomStartTime));
-      apps1.Stop (Seconds (dataTime + i * randomStartTime));
-
+      for (uint32_t j = 0; j < nSinks; ++j)
+        {
+          ApplicationContainer apps1 = onoff1.Install (adhocNodes.Get (j + nWifis - nSinks));
+          apps1.Start (Seconds (dataStart + j * randomStartTime));
+          apps1.Stop (Seconds (dataTime + j * randomStartTime));
+        }
     }
 
     AnimationInterface anim(animFile);
