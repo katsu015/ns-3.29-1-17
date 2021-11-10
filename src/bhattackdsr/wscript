@@ -1,0 +1,50 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('bhattackdsr', ['internet', 'wifi'])
+    module.includes = '.'
+    module.source = [
+        'model/bhattackdsr-routing.cc',
+        'model/bhattackdsr-options.cc',
+        'model/bhattackdsr-fs-header.cc',
+        'model/bhattackdsr-option-header.cc',
+        'model/bhattackdsr-maintain-buff.cc',
+        'model/bhattackdsr-passive-buff.cc',
+        'model/bhattackdsr-rsendbuff.cc',
+        'model/bhattackdsr-rcache.cc',
+        'model/bhattackdsr-rreq-table.cc',
+        'model/bhattackdsr-gratuitous-reply-table.cc',
+        'model/bhattackdsr-errorbuff.cc',
+        'model/bhattackdsr-network-queue.cc',
+        'helper/bhattackdsr-helper.cc',
+        'helper/bhattackdsr-main-helper.cc',
+        ]
+        
+    module_test = bld.create_ns3_module_test_library('bhattackdsr')
+    module_test.source = [
+        'test/bhattackdsr-test-suite.cc',
+        ]
+        
+    headers = bld(features='ns3header')
+    headers.module = 'bhattackdsr'
+    headers.source = [
+        'model/bhattackdsr-routing.h',
+        'model/bhattackdsr-options.h',
+        'model/bhattackdsr-fs-header.h',
+        'model/bhattackdsr-option-header.h',
+        'model/bhattackdsr-maintain-buff.h',
+        'model/bhattackdsr-passive-buff.h',
+        'model/bhattackdsr-rsendbuff.h',
+        'model/bhattackdsr-rcache.h',
+        'model/bhattackdsr-rreq-table.h',
+        'model/bhattackdsr-gratuitous-reply-table.h',
+        'model/bhattackdsr-errorbuff.h',
+        'model/bhattackdsr-network-queue.h',
+        'helper/bhattackdsr-helper.h',
+        'helper/bhattackdsr-main-helper.h',
+        ]
+
+    if (bld.env['ENABLE_EXAMPLES']):
+      bld.recurse('examples')
+
+    bld.ns3_python_bindings()
