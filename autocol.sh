@@ -17,7 +17,7 @@ Finish_Seed=11
 filenum=0
 Finish_filenum=10
 Runset=1
-Finish_Runset=10
+Finish_Runset=3
 while true
 do
 
