@@ -22,6 +22,10 @@
 
 #include <iostream>
 #include <fstream>
+#include <map>
+#include <typeinfo>
+#include <tuple>
+#include <string>
 
 #include "ns3/simulator.h"
 #include "ns3/log.h"
@@ -48,10 +52,13 @@
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
 
-#define fname "romn.txt"
-
+#define fname "route.txt"
 
 using namespace std;
+extern map<pair<u_int32_t,u_int32_t>, u_int32_t> busylist;
+
+u_int32_t key1,key2;
+
 std::ofstream outputfile(fname);
 
 namespace ns3 {
@@ -612,6 +619,8 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
 
   if (m_txParams.MustSendRts ())
     {
+
+      ////RTS送信
       SendRtsForPacket ();
     }
   else
@@ -715,6 +724,7 @@ MacLow::NotifyOffNow (void)
 void
 MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool ampduSubframe)
 {
+
   //std::ofstream outputfile(fname);
   NS_LOG_FUNCTION (this << packet << rxSnr << txVector.GetMode () << txVector.GetPreambleType ());
   /* A packet is received from the PHY.
@@ -730,6 +740,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
   NotifyNav (packet, hdr);
   if (hdr.IsRts ())
     {
+      ////rts受信
       //std::cout << "macLow:rts" << '\n';
       /* see section 9.2.5.7 802.11-1999
        * A STA that is addressed by an RTS frame shall transmit a CTS frame after a SIFS
@@ -747,6 +758,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
               && hdr.GetAddr1 () == m_self)
             {
               NS_LOG_DEBUG ("rx RTS from=" << hdr.GetAddr2 () << ", schedule CTS");
+              outputfile <<"macLow:rx RTS From " << hdr.GetAddr2 () << " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
               NS_ASSERT (m_sendCtsEvent.IsExpired ());
               m_stationManager->ReportRxOk (hdr.GetAddr2 (), &hdr,
                                             rxSnr, txVector.GetMode ());
@@ -760,6 +772,8 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
           else
             {
               NS_LOG_DEBUG ("rx RTS from=" << hdr.GetAddr2 () << ", cannot schedule CTS");
+
+              /////#RTS更新
             }
         }
     }
@@ -772,10 +786,9 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
         {
           NS_FATAL_ERROR ("Received CTS as part of an A-MPDU");
         }
-
-      NS_LOG_DEBUG ("received cts from=" << m_currentHdr.GetAddr1 ());
-      //normal node
-    /*  if ("00:00:00:00:00:10" == m_currentHdr.GetAddr1 ()) {
+        NS_LOG_DEBUG ("received cts from=" << m_currentHdr.GetAddr1 ());
+        //normal node
+        /*if ("00:00:00:00:00:10" == m_currentHdr.GetAddr1 ()) {
         CTScount++;
         std::cout <<"macLow:cts:id:15 " << CTScount << '\n';
 
@@ -793,14 +806,18 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
         std::cout <<"macLow:cts:id:39 " << CTScount2 << '\n';
 
       }
-*/
-      if ("00:00:00:00:00:08" == m_currentHdr.GetAddr1 ()) {
-        CTScount3++;
-        outputfile <<"macLow:cts From id7" << m_currentHdr.GetAddr1 () << " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
-        outputfile  << CTScount3 <<"\n";
+      */
+      ////cts受信
+      /////ビジーノードリスト更新orパケット送信
+      CTScount3++;
+      //outputfile <<"macLow:cts From id7" << m_currentHdr.GetAddr1 () << "to"<< hdr.GetAddr1 ()<< " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
+      //busylist.insert(make_pair(addstr,addstr2),CTScount3);
+      outputfile << addstr1 <<"\n";
+      key1=m_currentHdr.GetAddr1 ().m_address[5];
+      key2=hdr.GetAddr1 ().m_address[5];
+      busylist.insert(make_pair(key1,key2),CTScount3);
+      outputfile << busylist[key1,key2] <<"\n";
       //  outputfile.close();
-
-      }
 
       //Simulator::Schedule(Seconds(600),&MacLow::ResultWriter,CTScount3);
       SnrTag tag;
