@@ -37,6 +37,7 @@
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/youngdsr-module.h"
+#include "ns3/flow-monitor-module.h"
 #include <sstream>
 
 #include "ns3/netanim-module.h"
@@ -225,6 +226,22 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Stop (Seconds (TotalTime));
   wifiPhy.EnablePcapAll("dsr115f_rdtp");
+  FlowMonitorHelper flowmon;
+  Ptr<FlowMonitor> monitor = flowmon.InstallAll ();
   Simulator::Run ();
+  monitor->CheckForLostPackets ();
+  Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier> (flowmon.GetClassifier ());
+  FlowMonitor::FlowStatsContainer stats = monitor->GetFlowStats ();
+  for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin (); i != stats.end (); ++i)
+    {
+      Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow (i->first);
+      std::cout << "Flow " << i->first  << " (" << t.sourceAddress << " -> " << t.destinationAddress << ")\n";
+      std::cout << "  Tx Packets: " << i->second.txPackets << "\n";
+      std::cout << "  Tx Bytes:   " << i->second.txBytes << "\n";
+      std::cout << "  TxOffered:  " << i->second.txBytes * 8.0 / 9.0 / 1000 / 1000  << " Mbps\n";
+      std::cout << "  Rx Packets: " << i->second.rxPackets << "\n";
+      std::cout << "  Rx Bytes:   " << i->second.rxBytes << "\n";
+      std::cout << "  Throughput: " << i->second.rxBytes * 8.0 / 9.0 / 1000 / 1000  << " Mbps\n";
+    }
   Simulator::Destroy ();
 }

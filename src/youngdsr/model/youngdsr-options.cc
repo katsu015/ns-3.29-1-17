@@ -60,6 +60,7 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/ip-l4-protocol.h"
+#include "ns3/mac-low.h"
 #include "youngdsr-option-header.h"
 #include "youngdsr-options.h"
 #include "youngdsr-rcache.h"

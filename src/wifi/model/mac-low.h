@@ -38,6 +38,7 @@
 class TwoLevelAggregationTest;
 class AmpduAggregationTest;
 
+
 namespace ns3 {
 
 class WifiPhy;
@@ -58,6 +59,7 @@ class CtrlBAckResponseHeader;
 class MacLow : public Object
 {
 public:
+std::map<u_int32_t, u_int32_t> busy_list,busymap;
   /// Allow test cases to access private members
   friend class ::TwoLevelAggregationTest;
   /// Allow test cases to access private members

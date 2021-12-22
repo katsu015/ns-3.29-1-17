@@ -55,12 +55,9 @@
 #define fname "route.txt"
 
 using namespace std;
-//map<u_int32_t, map<u_int32_t,u_int32_t>> rtsmap;
-//map<u_int32_t, u_int32_t> busy_list;
+extern map<pair<u_int32_t,u_int32_t>, u_int32_t> busylist;
 
-u_int32_t key1,key2,Threshold;
-
-
+u_int32_t key1,key2;
 
 std::ofstream outputfile(fname);
 
@@ -158,6 +155,7 @@ MacLow::~MacLow ()
 {
   NS_LOG_FUNCTION (this);
 }
+
 u_int32_t RTScount = 0;
 u_int32_t CTScount = 0;
 u_int32_t RTScount2 = 0;
@@ -623,12 +621,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
     {
 
       ////RTS送信
-      key2=m_currentHdr.GetAddr1 ().m_address[5];
-      busy_list[key2]++;
-      outputfile <<"source =" << m_self <<" to "<< key2 <<" cnt "<<busy_list[key2] <<"\n";
       SendRtsForPacket ();
-      //key1=m_self.GetAddr1 ().m_address[5];
-
     }
   else
     {
@@ -816,14 +809,14 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       */
       ////cts受信
       /////ビジーノードリスト更新orパケット送信
+      CTScount3++;
       //outputfile <<"macLow:cts From id7" << m_currentHdr.GetAddr1 () << "to"<< hdr.GetAddr1 ()<< " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
       //busylist.insert(make_pair(addstr,addstr2),CTScount3);
+      outputfile << addstr1 <<"\n";
       key1=m_currentHdr.GetAddr1 ().m_address[5];
       key2=hdr.GetAddr1 ().m_address[5];
-      //busy_list.insert(make_pair(key1,CTScount3));
-      //if(busy_list[key1]==0)
-      busy_list[key1]--;
-      outputfile<<"macLow:cts From " <<key1 << " to "<< key2 <<" cnt "<< busy_list[key1] <<"\n";
+      busylist.insert(make_pair(key1,key2),CTScount3);
+      outputfile << busylist[key1,key2] <<"\n";
       //  outputfile.close();
 
       //Simulator::Schedule(Seconds(600),&MacLow::ResultWriter,CTScount3);
