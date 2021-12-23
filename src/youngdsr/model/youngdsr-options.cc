@@ -60,7 +60,6 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/ip-l4-protocol.h"
-#include "ns3/mac-low.h"
 #include "youngdsr-option-header.h"
 #include "youngdsr-options.h"
 #include "youngdsr-rcache.h"
@@ -73,6 +72,7 @@ u_int32_t malicious2 = 8;
 u_int32_t malicious3 = 9;
 u_int32_t erraddress = 3;
 u_int32_t dropcount = 0;
+u_int32_t key=0;
 //u_int32_t sendtomcount = 0;
 double perc = 0.25;
 
@@ -80,12 +80,12 @@ double perc = 0.25;
 
 using namespace std;
 std::ofstream outputfile(fname);
-
+//vector<u_int32_t> busymap;
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("YoungdsrOptions");
-
+//vector<u_int32_t> busymap;
 namespace youngdsr {
 
 NS_OBJECT_ENSURE_REGISTERED (YoungdsrOptions);
@@ -1517,6 +1517,7 @@ uint8_t YoungdsrOptionSR::GetOptionNumber () const
 
 uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource)
 {
+  //outputfile<< busymap[key] << '\n';
   //ofstream outputfile(fname);
   NS_LOG_FUNCTION (this << packet << youngdsrP << ipv4Address << source << ipv4Address << ipv4Header << (uint32_t)protocol << isPromisc);
   Ptr<Packet> p = packet->Copy ();

@@ -26,6 +26,7 @@
 #include <typeinfo>
 #include <tuple>
 #include <string>
+#include <vector>
 
 #include "ns3/simulator.h"
 #include "ns3/log.h"
@@ -58,8 +59,8 @@ using namespace std;
 //map<u_int32_t, map<u_int32_t,u_int32_t>> rtsmap;
 //map<u_int32_t, u_int32_t> busy_list;
 
-u_int32_t key1,key2,Threshold;
-
+u_int32_t key1,key2;
+u_int32_t Threshold = 10;
 
 
 std::ofstream outputfile(fname);
@@ -824,6 +825,24 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       //if(busy_list[key1]==0)
       busy_list[key1]--;
       outputfile<<"macLow:cts From " <<key1 << " to "<< key2 <<" cnt "<< busy_list[key1] <<"\n";
+      if (busy_list[key1] > Threshold && busymap.size() == 0) {
+        busymap.push_back(key1);
+        outputfile<<"busy " <<busymap[0] <<"\n";
+      }
+      else if (busy_list[key1] > Threshold) {
+        for (size_t i = 0; i < busymap.size(); i++) {
+          outputfile<<"busy " <<busymap[i] <<"\n";
+          if (busymap[i]==key1) {
+            ////重複，マップ
+            outputfile<<"tyouhuku " << "\n";
+            break;
+          }
+          else if (i == busymap.size()) {
+            busymap.push_back(key1);
+            outputfile<<"busy " <<busymap[i] <<"\n";
+          }
+        }
+      }
       //  outputfile.close();
 
       //Simulator::Schedule(Seconds(600),&MacLow::ResultWriter,CTScount3);

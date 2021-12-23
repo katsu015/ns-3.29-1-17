@@ -28,7 +28,9 @@
  * NSF grant CNS-1050226 (Multilayer Network Resilience Analysis and Experimentation on GENI),
  * US Department of Defense (DoD), and ITTC at The University of Kansas.
  */
-
+#include <iostream>
+#include <string>
+#include <stdio.h>
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/applications-module.h"
@@ -37,6 +39,9 @@
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/youngdsr-module.h"
+#include "ns3/flow-monitor-helper.h"
+#include "ns3/flow-monitor.h"
+
 #include "ns3/flow-monitor-module.h"
 #include <sstream>
 
@@ -219,6 +224,7 @@ main (int argc, char *argv[])
       {
         anim.UpdateNodeSize(i,10,10);
       }
+      anim.SetMaxPktsPerTraceFile(99999999999999);
       anim.EnablePacketMetadata();
 
       anim.EnableIpv4L3ProtocolCounters(Seconds(0),Seconds(600));
@@ -235,6 +241,10 @@ main (int argc, char *argv[])
   for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin (); i != stats.end (); ++i)
     {
       Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow (i->first);
+      if (t.sourceAddress == "10.1.1.2")
+        {
+          continue;
+        }
       std::cout << "Flow " << i->first  << " (" << t.sourceAddress << " -> " << t.destinationAddress << ")\n";
       std::cout << "  Tx Packets: " << i->second.txPackets << "\n";
       std::cout << "  Tx Bytes:   " << i->second.txBytes << "\n";
