@@ -56,12 +56,12 @@ class CtrlBAckResponseHeader;
  * \ingroup wifi
  * \brief handle RTS/CTS/DATA/ACK transactions.
  */
+
 class MacLow : public Object
 {
 public:
-std::map<u_int32_t, u_int32_t> busy_list;
-std::vector<u_int32_t> busymap;
-
+ std::map<u_int32_t, u_int32_t> busy_list;
+ std::vector<u_int32_t> busymap;
   /// Allow test cases to access private members
   friend class ::TwoLevelAggregationTest;
   /// Allow test cases to access private members
