@@ -60,8 +60,7 @@ class CtrlBAckResponseHeader;
 class MacLow : public Object
 {
 public:
- std::map<u_int32_t, u_int32_t> busy_list;
- std::vector<u_int32_t> busymap;
+
   /// Allow test cases to access private members
   friend class ::TwoLevelAggregationTest;
   /// Allow test cases to access private members
@@ -89,6 +88,7 @@ public:
   /**
    * \return current attached PHY device
    */
+//std::vector<u_int32_t> getvalue (void);
   Ptr<WifiPhy> GetPhy (void) const;
   /**
    * Remove WifiPhy associated with this MacLow.
@@ -456,6 +456,8 @@ public:
 
 
 private:
+//std::map<u_int32_t, u_int32_t> busy_list;
+ //std::vector<u_int32_t> busymap;
   /**
    * Cancel all scheduled events. Called before beginning a transmission
    * or switching channel.

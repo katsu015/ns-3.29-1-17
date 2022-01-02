@@ -56,6 +56,10 @@
 #define fname "route.txt"
 
 using namespace std;
+
+map<u_int32_t, map<u_int32_t,u_int32_t> > collisionmap;
+std::vector<std::vector<u_int32_t> > busy_list(50,vector<u_int32_t>(50));
+
 //map<u_int32_t, map<u_int32_t,u_int32_t>> rtsmap;
 //map<u_int32_t, u_int32_t> busy_list;
 
@@ -302,6 +306,13 @@ MacLow::ResetPhy (void)
   RemovePhyMacLowListener (m_phy);
   m_phy = 0;
 }
+/*
+vector<u_int32_t>
+MacLow::getvalue (void)
+{
+  return busy_list;
+}
+*/
 
 void
 MacLow::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager)
@@ -626,9 +637,11 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
     {
 
       ////RTS送信
+      key1=m_self.m_address[5];
       key2=m_currentHdr.GetAddr1 ().m_address[5];
-      busy_list[key2]++;
-      outputfile <<"source =" << m_self <<" to "<< key2 <<" cnt "<<busy_list[key2] <<"\n";
+      collisionmap[key1][key2]++;
+      outputfile <<"source =" << m_self <<" to "<< key2 <<" cnt "<<collisionmap[key1][key2] <<"\n";
+      //outputfile <<"hex" << hex << &collisionmap <<"\n";
       SendRtsForPacket ();
       //key1=m_self.GetAddr1 ().m_address[5];
 
@@ -823,25 +836,26 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       //busylist.insert(make_pair(addstr,addstr2),CTScount3);
       key1=m_currentHdr.GetAddr1 ().m_address[5];
       key2=hdr.GetAddr1 ().m_address[5];
-      //busy_list.insert(make_pair(key1,CTScount3));
-      //if(busy_list[key1]==0)
-      busy_list[key1]--;
-      outputfile<<"macLow:cts From " <<key1 << " to "<< key2 <<" cnt "<< busy_list[key1] <<"\n";
-      if (busy_list[key1] > Threshold && busymap.size() == 0) {
-        busymap.push_back(key1);
-        outputfile<<"busy " <<busymap[0] <<"\n";
+      //collisionmap.insert(make_pair(key1,CTScount3));
+      //if(collisionmap[key1]==0)
+      collisionmap[key2][key1]--;
+      outputfile<<"macLow:cts From " <<key1 << " to "<< key2 <<" cnt "<< collisionmap[key2][key1] <<"\n";
+      if (collisionmap[key2][key1] > Threshold && busy_list.at(key2).size() == 0) {
+        busy_list[key2].push_back(key1);
+
+        outputfile<<"busy " <<busy_list[key2][0] <<"\n";
       }
-      else if (busy_list[key1] > Threshold) {
-        for (size_t i = 0; i < busymap.size(); i++) {
-          outputfile<<"busy " <<busymap[i] <<"\n";
-          if (busymap[i]==key1) {
+      else if (collisionmap[key2][key1] > Threshold) {
+        for (u_int32_t i = 0; i < busy_list.at(key2).size() ; i++) {
+          outputfile<<"busy " <<busy_list[key2][i] <<"\n";
+          if (busy_list[key2][i]==key1) {
             ////重複，マップ
             outputfile<<"tyouhuku " << "\n";
             break;
           }
-          else if (i == busymap.size()) {
-            busymap.push_back(key1);
-            outputfile<<"busy " <<busymap[i] <<"\n";
+          else if (i == busy_list.at(key2).size() ) {
+            busy_list[key2].push_back(key1);
+            outputfile<<"busy " <<busy_list[key2][i] <<"\n";
           }
         }
       }

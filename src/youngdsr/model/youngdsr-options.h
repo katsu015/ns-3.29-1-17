@@ -50,7 +50,6 @@
 #include "ns3/traced-callback.h"
 #include "ns3/output-stream-wrapper.h"
 #include "ns3/timer.h"
-#include "ns3/mac-low.h"
 
 
 #include "youngdsr-rsendbuff.h"
@@ -76,6 +75,7 @@ namespace youngdsr {
 class YoungdsrOptions : public Object
 {
 public:
+
   /**
    * \brief Get the type identificator.
    * \return type identificator
