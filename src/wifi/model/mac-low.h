@@ -88,7 +88,10 @@ public:
   /**
    * \return current attached PHY device
    */
-//std::vector<u_int32_t> getvalue (void);
+//static std::vector<std::vector<u_int32_t> > busykey(50,vector<u_int32_t>(0));
+std::vector<std::vector<u_int32_t> > getvaluebk (void);
+
+//std::vector<u_int32_t> getvaluebk2 (void);
   Ptr<WifiPhy> GetPhy (void) const;
   /**
    * Remove WifiPhy associated with this MacLow.
@@ -457,7 +460,7 @@ public:
 
 private:
 //std::map<u_int32_t, u_int32_t> busy_list;
- //std::vector<u_int32_t> busymap;
+ std::vector<u_int32_t> busy_list;
   /**
    * Cancel all scheduled events. Called before beginning a transmission
    * or switching channel.

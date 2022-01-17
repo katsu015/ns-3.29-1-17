@@ -88,6 +88,10 @@ u_int32_t failedR = 0;
 std::ofstream outputfile2(fname);
 */
 
+#define fname "route.txt"
+
+std::ofstream outputfile2(fname);
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("YoungdsrRouting");
@@ -1136,7 +1140,6 @@ bool YoungdsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> p
       optionType = *(data);
 
       Ptr<youngdsr::YoungdsrOptions> youngdsrOption;
-
       if (optionType == 96)        // This is the source route option
         {
           Ipv4Address promiscSource = GetIPfromMAC (Mac48Address::ConvertFrom (from));
@@ -1150,9 +1153,8 @@ bool YoungdsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> p
                         " with source IP " << ipv4Header.GetSource () <<
                         " and destination IP " << ipv4Header.GetDestination () <<
                         " and packet : " << *pktMinusYoungdsrHdr);
-
-
-/*std::cout << Simulator::Now ().GetMicroSeconds () <<
+/*
+outputfile2 << Simulator::Now ().GetMicroSeconds () <<
               " DSR node " << m_mainAddress <<
               " overhearing packet PID: " << pktMinusIpHdr->GetUid () <<
               " from " << promiscSource <<

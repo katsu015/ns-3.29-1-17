@@ -60,6 +60,9 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/ip-l4-protocol.h"
+#include "ns3/mac-low.h"
+//#include "../../wifi/model/mac-low.h"
+
 #include "youngdsr-option-header.h"
 #include "youngdsr-options.h"
 #include "youngdsr-rcache.h"
@@ -73,6 +76,10 @@ u_int32_t malicious3 = 9;
 u_int32_t erraddress = 3;
 u_int32_t dropcount = 0;
 u_int32_t key=0;
+
+std::vector<std::vector<u_int32_t>>bk;
+
+//std::vector<u_int32_t> bk2;
 //u_int32_t sendtomcount = 0;
 double perc = 0.25;
 
@@ -596,7 +603,8 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
   //std::cout <<"targetAddress " << targetAddress <<"\n";
   // ルートリクエストヘッダーからノードリストと送信元アドレスを取得する
   std::vector<Ipv4Address> mainVector = rreq.GetNodesAddresses ();
-  std::vector<Ipv4Address> nodeList (mainVector);
+  std::vector<Ipv4Address> nodeList (mainVector); //今受け取ったメッセージの中にあるRReqを送受信したリスト
+  //メモ::全パケット中南海獲得したかを表示する
 
   // このリクエストの実際の送信元アドレスを取得します。保存を受信したかどうかを確認するときに使用されます
   // 前にルートリクエスト
@@ -1517,8 +1525,14 @@ uint8_t YoungdsrOptionSR::GetOptionNumber () const
 
 uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource)
 {
-  //MacLow *ml;
-  //outputfile<< ml->getvalue() << '\n';
+  Ptr<MacLow> mk;
+  bk = mk->getvaluebk();
+  //bk2=mk->getvaluebk2();
+  if( !bk[GetIDfromIP (ipv4Address)+1].empty() ) {
+    for (size_t i = 0; i < bk[GetIDfromIP (ipv4Address)+1].size(); i++) {
+      outputfile<<GetIDfromIP (ipv4Address)+1<< " bksize"<<bk[GetIDfromIP (ipv4Address)+1][i] << '\n';
+    }
+  }
   //ofstream outputfile(fname);
   NS_LOG_FUNCTION (this << packet << youngdsrP << ipv4Address << source << ipv4Address << ipv4Header << (uint32_t)protocol << isPromisc);
   Ptr<Packet> p = packet->Copy ();
@@ -1529,6 +1543,7 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
   YoungdsrOptionSRHeader sourceRoute;
   sourceRoute.SetNumberAddress (numberAddress);
   p->RemoveHeader (sourceRoute);
+  //outputfile<< bk2[] << '\n';
 
   ////double proba = 0.01; // 確率（1%）
   ////srand((unsigned)time(NULL)); // 乱数の初期化

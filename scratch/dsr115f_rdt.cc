@@ -41,7 +41,7 @@
 #include "ns3/youngdsr-module.h"
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/flow-monitor.h"
-
+//#include "ns3/watchdog.h"
 #include "ns3/flow-monitor-module.h"
 #include <sstream>
 
@@ -234,7 +234,9 @@ main (int argc, char *argv[])
   wifiPhy.EnablePcapAll("dsr115f_rdtp");
   FlowMonitorHelper flowmon;
   Ptr<FlowMonitor> monitor = flowmon.InstallAll ();
+  
   Simulator::Run ();
+
   monitor->CheckForLostPackets ();
   Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier> (flowmon.GetClassifier ());
   FlowMonitor::FlowStatsContainer stats = monitor->GetFlowStats ();

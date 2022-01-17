@@ -58,13 +58,14 @@
 using namespace std;
 
 map<u_int32_t, map<u_int32_t,u_int32_t> > collisionmap;
-std::vector<std::vector<u_int32_t> > busy_list(50,vector<u_int32_t>(50));
+std::vector<u_int32_t> busy_list;
+std::vector<std::vector<u_int32_t> > busykey(51,vector<u_int32_t>(0));
 
 //map<u_int32_t, map<u_int32_t,u_int32_t>> rtsmap;
 //map<u_int32_t, u_int32_t> busy_list;
 
-u_int32_t key1,key2;
-u_int32_t Threshold = 10;
+u_int32_t key1,key2,key3,Threshold=50;
+std::vector<std::vector<std::vector<u_int32_t>> > Threshold_list(51,vector<vector<u_int32_t>>(51,vector<u_int32_t>(0)));
 
 
 std::ofstream outputfile(fname);
@@ -306,14 +307,17 @@ MacLow::ResetPhy (void)
   RemovePhyMacLowListener (m_phy);
   m_phy = 0;
 }
+
+std::vector<std::vector<u_int32_t> > MacLow::getvaluebk (void)
+{
+  return busykey;
+}
 /*
-vector<u_int32_t>
-MacLow::getvalue (void)
+std::vector<u_int32_t> MacLow::getvaluebk2 (void)
 {
   return busy_list;
 }
 */
-
 void
 MacLow::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager)
 {
@@ -796,10 +800,30 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
             {
               NS_LOG_DEBUG ("rx RTS from=" << hdr.GetAddr2 () << ", cannot schedule CTS");
 
+              key1=m_self.m_address[5];
+              key2=hdr.GetAddr1 ().m_address[5];
+              key3=hdr.GetAddr2 ().m_address[5];
+              outputfile << key1<<"promisc source =" << key2 <<" to "<< key3 <<"\n";
+              if (key2 != 255) {
+                if (Threshold_list[key1][key2].empty()) {
+                  Threshold_list[key1][key2].push_back(key3);
+                }
+                else{
+                  for (u_int32_t i = 0; i < Threshold_list[key2].size(); i++) {
+                    if (Threshold_list[key1][key2][i]==key3) {
+                      break;
+                    }
+                    else if (i == Threshold_list[key1][key2].size()) {
+                      Threshold_list[key1][key2].push_back(key3);
+                    }
+                  }
+                }
+              }
               /////#RTS更新
+
             }
+          }
         }
-    }
   else if (hdr.IsCts ()
            && hdr.GetAddr1 () == m_self
            && m_ctsTimeoutEvent.IsRunning ()
@@ -840,25 +864,37 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       //if(collisionmap[key1]==0)
       collisionmap[key2][key1]--;
       outputfile<<"macLow:cts From " <<key1 << " to "<< key2 <<" cnt "<< collisionmap[key2][key1] <<"\n";
-      if (collisionmap[key2][key1] > Threshold && busy_list.at(key2).size() == 0) {
-        busy_list[key2].push_back(key1);
+if (!Threshold_list[key2][key1].empty()) {
 
-        outputfile<<"busy " <<busy_list[key2][0] <<"\n";
+      if (Threshold_list[key2][key1].size() > 1) {
+        Threshold=0;
       }
-      else if (collisionmap[key2][key1] > Threshold) {
-        for (u_int32_t i = 0; i < busy_list.at(key2).size() ; i++) {
-          outputfile<<"busy " <<busy_list[key2][i] <<"\n";
-          if (busy_list[key2][i]==key1) {
+}
+      if (collisionmap[key2][key1] > Threshold && busy_list.size() == 0) {
+        busy_list.push_back(key1);
+
+        outputfile<<"push to empty list" <<busy_list[0] <<"\n";
+      }
+      else if (collisionmap[key2][key1] > Threshold && busy_list.size() != 0) {
+        for (size_t i = 0; i < busy_list.size() ; i++) {
+          outputfile<<"busy " <<busy_list.size() <<"\n";
+          outputfile<<"busy " <<busy_list[i] <<"\n";
+          if (busy_list[i]==key1) {
             ////重複，マップ
-            outputfile<<"tyouhuku " << "\n";
             break;
           }
-          else if (i == busy_list.at(key2).size() ) {
-            busy_list[key2].push_back(key1);
-            outputfile<<"busy " <<busy_list[key2][i] <<"\n";
+          else if (i == busy_list.size()) {
+            busy_list.push_back(key1);
+            outputfile<<"busy " <<busy_list[i] <<"\n";
           }
         }
       }
+      busykey[key2].clear();
+      for(size_t i=0; i<busy_list.size(); i++){
+        busykey[key2].push_back(busy_list[i]);
+        outputfile<<"push list " <<  busykey[key2][i] <<"\n";
+      }
+
       //  outputfile.close();
 
       //Simulator::Schedule(Seconds(600),&MacLow::ResultWriter,CTScount3);
@@ -1168,6 +1204,16 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
     }
   else if (m_promisc)
     {
+      /*
+      key1=m_self.m_address[5];
+      key2=m_currentHdr.GetAddr1 ().m_address[5];
+
+        outputfile <<"promisc source =" << m_self <<" to "<< key2 <<"\n";
+      if (Threshold_list[key2] != 0 && key2 != 255) {
+          outputfile <<"Threshold =" << Threshold_list[key2] <<"\n";
+        Threshold_list[key2].push_back(key1);
+      }
+      */
       NS_ASSERT (hdr.GetAddr1 () != m_self);
       if (hdr.IsData ())
         {
