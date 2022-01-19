@@ -1144,6 +1144,9 @@ bool YoungdsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> p
         {
           Ipv4Address promiscSource = GetIPfromMAC (Mac48Address::ConvertFrom (from));
           youngdsrOption = GetOption (optionType);       // Get the relative DSR option and demux to the process function
+          ////届いたパケットがビジーからのものか確認
+
+          
          //オーバーヒアリング機能
           NS_LOG_DEBUG (Simulator::Now ().GetSeconds () <<
                         " DSR node " << m_mainAddress <<
@@ -1153,7 +1156,7 @@ bool YoungdsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> p
                         " with source IP " << ipv4Header.GetSource () <<
                         " and destination IP " << ipv4Header.GetDestination () <<
                         " and packet : " << *pktMinusYoungdsrHdr);
-/*
+if(ipv4Header.GetDestination () != GetIPfromMAC (Mac48Address::ConvertFrom (to))){
 outputfile2 << Simulator::Now ().GetMicroSeconds () <<
               " DSR node " << m_mainAddress <<
               " overhearing packet PID: " << pktMinusIpHdr->GetUid () <<
@@ -1162,7 +1165,8 @@ outputfile2 << Simulator::Now ().GetMicroSeconds () <<
               " with source IP " << ipv4Header.GetSource () <<
               " and destination IP " << ipv4Header.GetDestination () <<
               " and packet : " << *pktMinusYoungdsrHdr << '\n';
-*/
+}
+
           bool isPromisc = true;                     // Set the boolean value isPromisc as true
           youngdsrOption->Process (pktMinusIpHdr, pktMinusYoungdsrHdr, m_mainAddress, source, ipv4Header, nextHeader, isPromisc, promiscSource);
           return true;

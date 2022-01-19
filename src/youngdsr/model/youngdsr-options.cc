@@ -1527,10 +1527,11 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
 {
   Ptr<MacLow> mk;
   bk = mk->getvaluebk();
+  u_int32_t myid = GetIDfromIP (ipv4Address)+1;
   //bk2=mk->getvaluebk2();
-  if( !bk[GetIDfromIP (ipv4Address)+1].empty() ) {
-    for (size_t i = 0; i < bk[GetIDfromIP (ipv4Address)+1].size(); i++) {
-      outputfile<<GetIDfromIP (ipv4Address)+1<< " bksize"<<bk[GetIDfromIP (ipv4Address)+1][i] << '\n';
+  if( !bk[myid].empty() ) {
+    for (size_t i = 0; i < bk[myid].size(); i++) {
+      outputfile<<myid<< " bksize"<<bk[myid][i] << '\n';
     }
   }
   //ofstream outputfile(fname);
@@ -1563,6 +1564,9 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
   Ipv4Address srcAddress = ipv4Header.GetSource ();
   Ipv4Address destAddress = ipv4Header.GetDestination ();
 
+  u_int32_t psourceid = GetIDfromIP (srcAddress)+1;
+  //u_int32_t destid = GetIDfromIP (destAddress)+1;
+  
   // ノードリストの宛先を取得する
   Ipv4Address destination = nodeList.back ();
   // mノードへの送信を検知
@@ -1576,8 +1580,10 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
     * 1.自動ルート短縮が可能かどうかを確認する
     * 2.パッシブ確認応答かどうかを確認する
    */
+   ////無差別受信
   if (isPromisc)
     {
+      outputfile<<myid<< "We process promiscuous receipt data packet" << '\n';
       NS_LOG_LOGIC ("We process promiscuous receipt data packet");
       if (ContainAddressAfter (ipv4Address, destAddress, nodeList))
         {
@@ -1626,6 +1632,35 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
               NS_LOG_DEBUG ("Saved the entry for further use");
               youngdsr->PassiveEntryCheck (packet, source, destination, segsLeft, fragmentOffset, identification, true);
             }
+        }
+        else
+        {
+          ////bk[] empty check
+          if(!bk[myid].empty())
+          {
+            
+            for (size_t i = 0; i < bk[myid].size(); i++) {
+              ////destination =destaddress なのでソースがdestinationに送ったことがわかる
+              if(bk[myid][i] == psourceid)
+              {
+                ////ukai
+                outputfile <<myid<<" busy kaku " <<psourceid<< '\n';
+                ////迂回開始
+                
+
+              }
+              ////送信が確認されない
+              /*
+              else if(i == bk[myid].size())
+              {
+                outputfile <<myid<<" bh? " <<psourceid<< '\n';
+                ////何度か送信を確認する必要あり
+              }
+              */
+            }
+          }
+        
+
         }
       //無差別に受信したパケットを安全に終了します
       return 0;

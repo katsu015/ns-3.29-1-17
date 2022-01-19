@@ -1,0 +1,11 @@
+Waf: Entering directory `/home/shuto/workspace/ns-allinone-3.29/ns-3.29-1-17/build'
+[1898/2030] Compiling src/youngdsr/model/youngdsr-options.cc
+[1952/2030] Linking build/lib/libns3-dev-youngdsr-debug.so
+[1995/2030] Linking build/scratch/sdattackdsrn_rdt
+[1996/2030] Linking build/scratch/bhattackdsr
+[1997/2030] Linking build/scratch/dsr5f_rdt
+[1998/2030] Linking build/scratch/myfirst
+[1999/2030] Linking build/scratch/sdattackdsrgood_rdt
+[2000/2030] Linking build/scratch/rushattackdsrn_rdt
+[2001/2030] Linking build/scratch/dsr11good
+[2002/2030] Linking build/scratch/rushattackdsr
