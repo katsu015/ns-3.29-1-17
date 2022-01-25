@@ -39,6 +39,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include <stdio.h>
+
 #include "ns3/config.h"
 #include "ns3/enum.h"
 #include "ns3/string.h"
@@ -69,6 +71,7 @@
 #include "ns3/llc-snap-header.h"
 #include "ns3/arp-header.h"
 #include "ns3/ipv6-interface.h"
+#include "ns3/mac-low.h"
 
 #include "youngdsr-rreq-table.h"
 #include "youngdsr-rcache.h"
@@ -88,6 +91,7 @@ u_int32_t failedR = 0;
 std::ofstream outputfile2(fname);
 */
 
+std::vector<std::vector<u_int32_t>>bk2;
 #define fname "route.txt"
 
 std::ofstream outputfile2(fname);
@@ -1092,8 +1096,10 @@ bool YoungdsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> p
    */
   Ipv4Address ourAddress = m_ipv4->GetAddress (1, 0).GetLocal ();
   // check if the message type is 2 and if the ipv4 address matches
+  ////promisc 
   if (youngdsrRouting.GetMessageType () == 2 && ourAddress == m_mainAddress)
     {
+      ////pid
       NS_LOG_DEBUG ("data packet receives " << packet->GetUid ());
       Ipv4Address sourceIp = GetIPfromID (youngdsrRouting.GetSourceId ());
       Ipv4Address destinationIp = GetIPfromID ( youngdsrRouting.GetDestId ());
@@ -1156,7 +1162,9 @@ bool YoungdsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> p
                         " with source IP " << ipv4Header.GetSource () <<
                         " and destination IP " << ipv4Header.GetDestination () <<
                         " and packet : " << *pktMinusYoungdsrHdr);
-if(ipv4Header.GetDestination () != GetIPfromMAC (Mac48Address::ConvertFrom (to))){
+std::cout <<" overhearing packet PID: " << pktMinusIpHdr->GetUid () << '\n';
+//if(ipv4Header.GetDestination () != GetIPfromMAC (Mac48Address::ConvertFrom (to))){
+/*
 outputfile2 << Simulator::Now ().GetMicroSeconds () <<
               " DSR node " << m_mainAddress <<
               " overhearing packet PID: " << pktMinusIpHdr->GetUid () <<
@@ -1165,7 +1173,8 @@ outputfile2 << Simulator::Now ().GetMicroSeconds () <<
               " with source IP " << ipv4Header.GetSource () <<
               " and destination IP " << ipv4Header.GetDestination () <<
               " and packet : " << *pktMinusYoungdsrHdr << '\n';
-}
+              */
+//}
 
           bool isPromisc = true;                     // Set the boolean value isPromisc as true
           youngdsrOption->Process (pktMinusIpHdr, pktMinusYoungdsrHdr, m_mainAddress, source, ipv4Header, nextHeader, isPromisc, promiscSource);
@@ -2472,6 +2481,7 @@ YoungdsrRouting::ScheduleNetworkPacketRetry (YoungdsrMaintainBuffEntry & mb,
                                         bool isFirst,
                                         uint8_t protocol)
 {
+  ////packetretry
   Ptr<Packet> p = Create<Packet> ();
   Ptr<Packet> youngdsrP = Create<Packet> ();
   // The new entry will be used for retransmission
@@ -2562,6 +2572,7 @@ YoungdsrRouting::ScheduleNetworkPacketRetry (YoungdsrMaintainBuffEntry & mb,
        */
 
       //m_tryPassiveAcksの後、ネットワーク確認オプションを使用してパケットの再送信をスケジュールします
+      ////再送信後処理
       m_addressForwardTimer[networkKey].SetFunction (&YoungdsrRouting::NetworkScheduleTimerExpire, this);
       m_addressForwardTimer[networkKey].Remove ();
       m_addressForwardTimer[networkKey].SetArguments (mb, protocol);
@@ -3367,6 +3378,10 @@ YoungdsrRouting::Receive (Ptr<Packet> p,
   uint32_t sourceId = youngdsrRoutingHeader.GetSourceId ();
   Ipv4Address source = GetIPfromID (sourceId);
   NS_LOG_INFO ("The source address " << source << " with source id " << sourceId);
+  ////source id
+
+  ////std::cout <<"The source address " << source << " with source id " << sourceId << '\n';
+
   /*
    * Get the IP source and destination address
    */

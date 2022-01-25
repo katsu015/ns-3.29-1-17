@@ -269,7 +269,7 @@ Ipv4Address YoungdsrOptions::ReverseSearchNextTwoHop  (Ipv4Address ipv4Address, 
         }
     }
   NS_FATAL_ERROR ("next hop address not found, route corrupted");
-  outputfile << "next hop address not found, route corrupted" << '\n';
+  cout << "next hop address not found, route corrupted" << '\n';
   Ipv4Address none = "0.0.0.0";
   return none;
 }
@@ -565,7 +565,7 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
   uint8_t buf[2];
   p->CopyData (buf, sizeof(buf));
   uint8_t numberAddress = (buf[1] - 6) / 4;
-//    outputfile <<" numberaddress "<< (uint32_t)numberAddress <<  "\n" ;
+//    cout <<" numberaddress "<< (uint32_t)numberAddress <<  "\n" ;
 
   NS_LOG_DEBUG ("The number of Ip addresses " << (uint32_t)numberAddress);
   if (numberAddress >= 255)
@@ -737,10 +737,10 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
             m_finalRoute.push_back (targetAddress);  // 出発地から目的地までの完全なルートを取得する
 
 
-            outputfile << "/finalroute/　idはipv4addressの末尾から-1した数" << '\n';
+            cout << "/finalroute/　idはipv4addressの末尾から-1した数" << '\n';
             for (std::vector<Ipv4Address>::iterator i = m_finalRoute.begin (); i != m_finalRoute.end (); ++i)
               {
-                outputfile << *i << '\n';
+                cout << *i << '\n';
               }
             PrintVector (m_finalRoute);
 
@@ -887,7 +887,7 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
           */
           if (GetIDfromIP (ipv4Address) == malicious)
           {
-          outputfile << "mali" << '\n';
+          cout << "mali" << '\n';
         }
 
           Ipv4Address nextHop; // 使用するネクストホップアドレスを宣言する
@@ -922,15 +922,15 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
                 //  std::cout << *i << '\n';
                   m_finalRoute.push_back (*i);  // 出発地から目的地までの完全なルートを取得する
                 }
-              outputfile << "/--------/" << '\n';
-              outputfile << "/finalroute/" << '\n';
+              cout << "/--------/" << '\n';
+              cout << "/finalroute/" << '\n';
               for (std::vector<Ipv4Address>::iterator i = m_finalRoute.begin (); i != m_finalRoute.end (); ++i)
                 {
                   //ファイナルルートの表示
-                  outputfile << *i << '\n';
+                  cout << *i << '\n';
                 }
               PrintVector (m_finalRoute);
-             outputfile << "/--------/" << '\n';
+             cout << "/--------/" << '\n';
 
               nextHop = ReverseSearchNextHop (ipv4Address, m_finalRoute); // get the next hop
             //  std::cout << "/* nextHop */
@@ -1055,7 +1055,7 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
         {
           if (GetIDfromIP (ipv4Address) == malicious)
           {
-          outputfile << "mali(2)" << '\n';
+          cout << "mali(2)" << '\n';
         }
         //  std::cout << "/* ヘッダーとルートキャッシュの処理 */" << '\n';
           m_finalRoute.clear ();                // Clear the final route vector
@@ -1193,7 +1193,7 @@ uint8_t YoungdsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
 
             if (GetIDfromIP (ipv4Address) == malicious)
             {
-            outputfile << "malicheckaerror" << '\n';
+            cout << "malicheckaerror" << '\n';
           }
 
           mainVector.push_back (ipv4Address);
@@ -1529,12 +1529,20 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
   bk = mk->getvaluebk();
   u_int32_t myid = GetIDfromIP (ipv4Address)+1;
   //bk2=mk->getvaluebk2();
-  if( !bk[myid].empty() ) {
-    for (size_t i = 0; i < bk[myid].size(); i++) {
-      outputfile<<myid<< " bksize"<<bk[myid][i] << '\n';
+  for(size_t j = 0; j < 51; j++){
+    if( !bk[j].empty() ) {
+    for (size_t i = 0; i < bk[j].size(); i++) {
+      cout<<j<< " bksize"<<bk[j][i] << '\n';
     }
   }
-  //ofstream outputfile(fname);
+  }
+  if( !bk[myid].empty() ) {
+    for (size_t i = 0; i < bk[myid].size(); i++) {
+      cout<<myid<< " bksize"<<bk[myid][i] << '\n';
+    }
+  }
+  
+  //ofstream cout(fname);
   NS_LOG_FUNCTION (this << packet << youngdsrP << ipv4Address << source << ipv4Address << ipv4Header << (uint32_t)protocol << isPromisc);
   Ptr<Packet> p = packet->Copy ();
   // ルーターのアドレスフィールドの数を取得する
@@ -1544,7 +1552,7 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
   YoungdsrOptionSRHeader sourceRoute;
   sourceRoute.SetNumberAddress (numberAddress);
   p->RemoveHeader (sourceRoute);
-  //outputfile<< bk2[] << '\n';
+  //cout<< bk2[] << '\n';
 
   ////double proba = 0.01; // 確率（1%）
   ////srand((unsigned)time(NULL)); // 乱数の初期化
@@ -1575,6 +1583,26 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
 
   }
   */
+  //Ipv4Address nextHop = SearchNextHop (srcAddress, nodeList);
+  // u_int32_t nextid = GetIDfromIP (nextHop)+1;
+  if(!bk[myid].empty())
+          {
+            for (auto it = bk[myid].begin(); it != bk[myid].end();) {
+              // 条件一致した要素を削除する
+              if (bk[myid][*it] == psourceid) {
+                // 削除された要素の次を指すイテレータが返される。
+                it = bk[myid].erase(it);
+
+                cout <<myid<<" it's busy not bh " <<psourceid<< '\n';
+                ////迂回開始
+                
+              }
+              // 要素削除をしない場合に、イテレータを進める
+              else {
+                ++it;
+              }
+            }
+          }
   /*
    * 無差別受信データパケットの場合、
     * 1.自動ルート短縮が可能かどうかを確認する
@@ -1583,7 +1611,7 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
    ////無差別受信
   if (isPromisc)
     {
-      outputfile<<myid<< "We process promiscuous receipt data packet" << '\n';
+      cout<<myid<< "We process promiscuous receipt data packet" << '\n';
       NS_LOG_LOGIC ("We process promiscuous receipt data packet");
       if (ContainAddressAfter (ipv4Address, destAddress, nodeList))
         {
@@ -1644,19 +1672,14 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
               if(bk[myid][i] == psourceid)
               {
                 ////ukai
-                outputfile <<myid<<" busy kaku " <<psourceid<< '\n';
+                cout <<myid<<" it's busy not bh " <<psourceid<< '\n';
                 ////迂回開始
                 
 
               }
               ////送信が確認されない
-              /*
-              else if(i == bk[myid].size())
-              {
-                outputfile <<myid<<" bh? " <<psourceid<< '\n';
-                ////何度か送信を確認する必要あり
-              }
-              */
+              
+              
             }
           }
         
@@ -1671,7 +1694,7 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
       /*if (GetIDfromIP(ipv4Address) == malicious) {*/
         /* code */
       //  std::cout << "Mノードが受信" << '\n';
-      /*outputfile<< "Mノードへsendした回数" << sendtomcount++ << '\n';
+      /*cout<< "Mノードへsendした回数" << sendtomcount++ << '\n';
 
       }
       */
@@ -1692,6 +1715,44 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
        ///確認応答を送り返す
       if (optionType == 160)
         {
+          if(!bk[myid].empty())
+          {
+            for (auto it = bk[myid].begin(); it != bk[myid].end();) {
+              // 条件一致した要素を削除する
+              if (bk[myid][*it] == psourceid) {
+                // 削除された要素の次を指すイテレータが返される。
+                it = bk[myid].erase(it);
+                
+                ////迂回開始
+              }
+              // 要素削除をしない場合に、イテレータを進める
+              else {
+                ++it;
+              }
+            }
+            /*
+            for (size_t i = 0; i != bk.at(myid).end(); i++) {
+              
+              ////destination =destaddress なのでソースがdestinationに送ったことがわかる
+              if(bk[myid][i] == psourceid)
+              {
+                ////ukai
+                cout <<myid<<" it's busy " <<psourceid<< '\n';
+                ////迂回開始
+               bk.at(myid).erase(i);
+
+              }
+              ////送信が確認されない
+              
+              else
+              {
+                cout <<myid<<" it is bh " <<psourceid<< '\n';
+                ////何度か送信を確認する必要あり
+              }
+              
+            }
+            */
+          }
           NS_LOG_LOGIC ("Remove the ack request header and add ack header to the packet");
           // ここでは、前のホップへのackパケットを削除します
           YoungdsrOptionAckReqHeader ackReq;
@@ -1709,8 +1770,8 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
             NS_LOG_DEBUG ("Send back ACK to the earlier hop " << ackAddress << " from us " << ipv4Address);
             youngdsr->SendAck (ackId, ackAddress, source, destination, protocol, m_ipv4Route);
             sendACKcount++;
-            outputfile << "Send back ACK to the earlier hop " << ackAddress << " from us " << ipv4Address << '\n';
-            outputfile << "sendACKした回数" << sendACKcount++ << '\n';
+            cout << "Send back ACK to the earlier hop " << ackAddress << " from us " << ipv4Address << '\n';
+            cout << "sendACKした回数" << sendACKcount++ << '\n';
           }
           if (!nodeList.empty ())
             {
@@ -1732,7 +1793,7 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
           m_ipv4Route = SetRoute (ackAddress, ipv4Address);
           NS_LOG_DEBUG ("Send back ACK to the earlier hop " << ackAddress << " from us " << ipv4Address);
           youngdsr->SendAck (ackId, ackAddress, source, destination, protocol, m_ipv4Route);
-          outputfile << "Send back ACK to the earlier hop " << ackAddress << " from us " << ipv4Address << '\n';
+          cout << "Send back ACK to the earlier hop " << ackAddress << " from us " << ipv4Address << '\n';
           ////sendACKcount++;
         //  std::cout << "sendACKした回数" << sendACKcount++ << '\n';
         }
@@ -1789,7 +1850,7 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
       if(GetIDfromIP(ipv4Address) == malicious)
         {
           dropcount++;
-          outputfile << "/*Mノードにパケットが届いた　ドロップ */"<<dropcount<< "回目"<< '\n';
+          cout << "/*Mノードにパケットが届いた　ドロップ */"<<dropcount<< "回目"<< '\n';
           //// proba = perc; // 確率（1%）
           //// srand((unsigned)time(NULL)); // 乱数の初期化
           ///if ( (double)rand()/RAND_MAX < proba ) {
@@ -1856,7 +1917,7 @@ uint8_t YoungdsrOptionRerr::GetOptionNumber () const
 
 uint8_t YoungdsrOptionRerr::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource)
 {
-  outputfile << ipv4Address << '\n';
+  cout << ipv4Address << '\n';
 
   NS_LOG_FUNCTION (this << packet << youngdsrP << ipv4Address << source << ipv4Header << (uint32_t)protocol << isPromisc);
   Ptr<Packet> p = packet->Copy ();
@@ -1890,10 +1951,10 @@ uint8_t YoungdsrOptionRerr::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, 
       NS_LOG_DEBUG ("The error source is " <<  rerrUnreach.GetErrorDst () << "and the unreachable node is " << unreachAddress);
       if (GetIDfromIP (ipv4Address) == 3)
       {
-      outputfile << "rerrmali" << '\n';
+      cout << "rerrmali" << '\n';
     }
 
-      outputfile << "rerr"<< rerrUnreach.GetErrorSrc ()<<" " <<rerrUnreach.GetUnreachNode ()<<" "<< rerrUnreach.GetErrorDst () << '\n';
+      cout << "rerr"<< rerrUnreach.GetErrorSrc ()<<" " <<rerrUnreach.GetUnreachNode ()<<" "<< rerrUnreach.GetErrorDst () << '\n';
       /*
        * rerrヘッダーのシリアル化されたサイズを取得します
        */

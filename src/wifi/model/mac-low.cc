@@ -64,7 +64,7 @@ std::vector<std::vector<u_int32_t> > busykey(51,vector<u_int32_t>(0));
 //map<u_int32_t, map<u_int32_t,u_int32_t>> rtsmap;
 //map<u_int32_t, u_int32_t> busy_list;
 
-u_int32_t key1,key2,key3,Threshold=50;
+u_int32_t key1,key2,key3,Threshold=0;
 std::vector<std::vector<std::vector<u_int32_t>> > Threshold_list(51,vector<vector<u_int32_t>>(51,vector<u_int32_t>(0)));
 
 
@@ -525,8 +525,8 @@ MacLow::IsAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
 void
 MacLow::ResultWriter (u_int32_t CTScount3)
 {
-  outputfile <<"macLow:cts:id:7 From " << hdr.GetAddr2 () << " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
-  outputfile  << CTScount3 <<"\n";
+  cout <<"macLow:cts:id:7 From " << hdr.GetAddr2 () << " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
+  cout  << CTScount3 <<"\n";
 }
 */
 void
@@ -644,8 +644,8 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
       key1=m_self.m_address[5];
       key2=m_currentHdr.GetAddr1 ().m_address[5];
       collisionmap[key1][key2]++;
-      outputfile <<"source =" << m_self <<" to "<< key2 <<" cnt "<<collisionmap[key1][key2] <<"\n";
-      //outputfile <<"hex" << hex << &collisionmap <<"\n";
+      cout <<"source =" << m_self <<" to "<< key2 <<" cnt "<<collisionmap[key1][key2] <<"\n";
+      //cout <<"hex" << hex << &collisionmap <<"\n";
       SendRtsForPacket ();
       //key1=m_self.GetAddr1 ().m_address[5];
 
@@ -752,7 +752,7 @@ void
 MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool ampduSubframe)
 {
 
-  //std::ofstream outputfile(fname);
+  //std::ofstream cout(fname);
   NS_LOG_FUNCTION (this << packet << rxSnr << txVector.GetMode () << txVector.GetPreambleType ());
   /* A packet is received from the PHY.
    * When we have handled this packet,
@@ -785,7 +785,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
               && hdr.GetAddr1 () == m_self)
             {
               NS_LOG_DEBUG ("rx RTS from=" << hdr.GetAddr2 () << ", schedule CTS");
-              outputfile <<"macLow:rx RTS From " << hdr.GetAddr2 () << " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
+              cout <<"macLow:rx RTS From " << hdr.GetAddr2 () << " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
               NS_ASSERT (m_sendCtsEvent.IsExpired ());
               m_stationManager->ReportRxOk (hdr.GetAddr2 (), &hdr,
                                             rxSnr, txVector.GetMode ());
@@ -803,13 +803,13 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
               key1=m_self.m_address[5];
               key2=hdr.GetAddr1 ().m_address[5];
               key3=hdr.GetAddr2 ().m_address[5];
-              outputfile << key1<<"promisc source =" << key2 <<" to "<< key3 <<"\n";
+              cout << key1<<"promisc source =" << key2 <<" to "<< key3 <<"\n";
               if (key2 != 255) {
                 if (Threshold_list[key1][key2].empty()) {
                   Threshold_list[key1][key2].push_back(key3);
                 }
                 else{
-                  for (u_int32_t i = 0; i < Threshold_list[key2].size(); i++) {
+                  for (u_int32_t i = 0; i < Threshold_list[key1][key2].size(); i++) {
                     if (Threshold_list[key1][key2][i]==key3) {
                       break;
                     }
@@ -856,46 +856,52 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       */
       ////cts受信
       /////ビジーノードリスト更新orパケット送信
-      //outputfile <<"macLow:cts From id7" << m_currentHdr.GetAddr1 () << "to"<< hdr.GetAddr1 ()<< " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
+      //cout <<"macLow:cts From id7" << m_currentHdr.GetAddr1 () << "to"<< hdr.GetAddr1 ()<< " at " << Simulator::Now ().GetMicroSeconds () <<"\n";
       //busylist.insert(make_pair(addstr,addstr2),CTScount3);
       key1=m_currentHdr.GetAddr1 ().m_address[5];
       key2=hdr.GetAddr1 ().m_address[5];
       //collisionmap.insert(make_pair(key1,CTScount3));
       //if(collisionmap[key1]==0)
       collisionmap[key2][key1]--;
-      outputfile<<"macLow:cts From " <<key1 << " to "<< key2 <<" cnt "<< collisionmap[key2][key1] <<"\n";
-if (!Threshold_list[key2][key1].empty()) {
-
-      if (Threshold_list[key2][key1].size() > 1) {
-        Threshold=0;
+      cout<<"macLow:cts From " <<key1 << " to "<< key2 <<" cnt "<< collisionmap[key2][key1] <<"\n";
+      if (Threshold_list[key2][key1].empty()) {
+        Threshold=10;
       }
-}
-      if (collisionmap[key2][key1] > Threshold && busy_list.size() == 0) {
-        busy_list.push_back(key1);
-
-        outputfile<<"push to empty list" <<busy_list[0] <<"\n";
+      else if (Threshold_list[key2][key1].size() > 2) {
+              Threshold=0;
       }
-      else if (collisionmap[key2][key1] > Threshold && busy_list.size() != 0) {
+
+
+      if (collisionmap[key2][key1] >= Threshold && busy_list.size() != 0) {
         for (size_t i = 0; i < busy_list.size() ; i++) {
-          outputfile<<"busy " <<busy_list.size() <<"\n";
-          outputfile<<"busy " <<busy_list[i] <<"\n";
           if (busy_list[i]==key1) {
             ////重複，マップ
             break;
           }
           else if (i == busy_list.size()) {
             busy_list.push_back(key1);
-            outputfile<<"busy " <<busy_list[i] <<"\n";
+            cout<<"busy " <<busy_list[i] <<"\n";
+            busykey[key2].clear();
+            for(size_t i=0; i<busy_list.size(); i++){
+              busykey[key2].push_back(busy_list[i]);
+              cout<<"push list " <<  busykey[key2][i] <<"\n";
+            }
           }
         }
       }
-      busykey[key2].clear();
-      for(size_t i=0; i<busy_list.size(); i++){
-        busykey[key2].push_back(busy_list[i]);
-        outputfile<<"push list " <<  busykey[key2][i] <<"\n";
-      }
+      else if (collisionmap[key2][key1] >= Threshold && busy_list.size() == 0) {
+        busy_list.push_back(key1);
 
-      //  outputfile.close();
+        cout<<"push to empty list" <<busy_list[0] <<"\n";
+
+        busykey[key2].clear();
+        for(size_t i=0; i<busy_list.size(); i++){
+          busykey[key2].push_back(busy_list[i]);
+          cout<<"push list " <<  busykey[key2][i] <<"\n";
+        }
+      }
+      
+      //  cout.close();
 
       //Simulator::Schedule(Seconds(600),&MacLow::ResultWriter,CTScount3);
       SnrTag tag;
@@ -1208,9 +1214,9 @@ if (!Threshold_list[key2][key1].empty()) {
       key1=m_self.m_address[5];
       key2=m_currentHdr.GetAddr1 ().m_address[5];
 
-        outputfile <<"promisc source =" << m_self <<" to "<< key2 <<"\n";
+        cout <<"promisc source =" << m_self <<" to "<< key2 <<"\n";
       if (Threshold_list[key2] != 0 && key2 != 255) {
-          outputfile <<"Threshold =" << Threshold_list[key2] <<"\n";
+          cout <<"Threshold =" << Threshold_list[key2] <<"\n";
         Threshold_list[key2].push_back(key1);
       }
       */
@@ -1242,7 +1248,7 @@ rxPacket:
   packet->RemoveTrailer (fcs);
   m_rxCallback (packet, &hdr);
   return;
-//outputfile.close();
+//cout.close();
 }
 
 uint32_t
@@ -1716,7 +1722,7 @@ MacLow::BlockAckTimeout (void)
 void
 MacLow::SendRtsForPacket (void)
 {
-  //std::ofstream outputfile(fname);
+  //std::ofstream cout(fname);
   //std::cout << "SendRtsForPacket" << '\n';
   /*
   *normaln nodes
@@ -1741,36 +1747,36 @@ MacLow::SendRtsForPacket (void)
   }
   if ("00:00:00:00:00:08" == m_currentHdr.GetAddr1 ()) {
     //std::cout << "countRTS:id:7" << '\n';
-    outputfile << "\ncountRTS:id:7 from "<< m_self << " at "<< Simulator::Now ().GetMicroSeconds () <<"\n";
+    cout << "\ncountRTS:id:7 from "<< m_self << " at "<< Simulator::Now ().GetMicroSeconds () <<"\n";
     RTScount3++;
   //  std::cout << RTScount3 << '\n';
-  outputfile << RTScount3 <<"\n";
-//outputfile.close();
+  cout << RTScount3 <<"\n";
+//cout.close();
   }
   if ("00:00:00:00:00:29" == m_currentHdr.GetAddr1 ()) {
     //std::cout << "countRTS:id:7" << '\n';
-    outputfile << "\ncountRTS:id:40 from "<< m_self << " at "<< Simulator::Now ().GetMicroSeconds () <<"\n";
+    cout << "\ncountRTS:id:40 from "<< m_self << " at "<< Simulator::Now ().GetMicroSeconds () <<"\n";
     RTScount4++;
   //  std::cout << RTScount3 << '\n';
-  outputfile << RTScount4 <<"\n";
-//outputfile.close();
+  cout << RTScount4 <<"\n";
+//cout.close();
   }
 
   if ("00:00:00:00:00:02" == m_currentHdr.GetAddr1 ()) {
     //std::cout << "countRTS:id:7" << '\n';
-    outputfile << "\ncountRTS:id:1 from "<< m_self << " at "<< Simulator::Now ().GetMicroSeconds () <<"\n";
+    cout << "\ncountRTS:id:1 from "<< m_self << " at "<< Simulator::Now ().GetMicroSeconds () <<"\n";
     RTScount5++;
   //  std::cout << RTScount3 << '\n';
-  outputfile << RTScount5 <<"\n";
-//outputfile.close();
+  cout << RTScount5 <<"\n";
+//cout.close();
   }
   if ("00:00:00:00:00:33" == m_currentHdr.GetAddr1 ()) {
     //std::cout << "countRTS:id:7" << '\n';
-    outputfile << "\ncountRTS:id:null-sda from "<< m_self << " at "<< Simulator::Now ().GetMicroSeconds () <<"\n";
+    cout << "\ncountRTS:id:null-sda from "<< m_self << " at "<< Simulator::Now ().GetMicroSeconds () <<"\n";
     RTScount6++;
   //  std::cout << RTScount3 << '\n';
-  outputfile << RTScount6 <<"\n";
-//outputfile.close();
+  cout << RTScount6 <<"\n";
+//cout.close();
   }
   */
   NS_LOG_FUNCTION (this);
@@ -1830,7 +1836,7 @@ MacLow::SendRtsForPacket (void)
   AddWifiMacTrailer (packet);
 
   ForwardDown (packet, &rts, rtsTxVector);
-//  outputfile.close();
+//  cout.close();
 }
 
 void
