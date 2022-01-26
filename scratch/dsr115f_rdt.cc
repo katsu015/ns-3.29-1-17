@@ -31,6 +31,7 @@
 #include <iostream>
 #include <string>
 #include <stdio.h>
+#include <cmath>
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/applications-module.h"
@@ -51,6 +52,37 @@
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("dsrTest");
+////
+int packetsSent = 0;
+int packetsReceived = 0;
+////
+void ReceivePacket (Ptr<Socket> socket)
+{
+  Ptr<Packet> packet;
+  while ((packet = socket->Recv ()))
+    {
+	  packetsReceived++;
+      std::cout<<"Received packet - "<<packetsReceived<<" and Size is "<<packet->GetSize ()<<" Bytes."<<std::endl;
+    }
+}
+static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 
+                             uint32_t pktCount, Time pktInterval )
+{
+  if (pktCount > 0)
+    {
+      socket->Send (Create<Packet> (pktSize));
+      packetsSent++;
+      std::cout<<"Packet sent - "<<packetsSent<<std::endl;
+      
+      Simulator::Schedule (pktInterval, &GenerateTraffic, 
+                           socket, pktSize,pktCount-1, pktInterval);
+    }
+  else
+    {
+      socket->Close ();
+    }
+}
+
 
 int
 main (int argc, char *argv[])
@@ -96,7 +128,11 @@ main (int argc, char *argv[])
   double ppers = 1;
   uint32_t packetSize = 512;
   double dataStart = 100.0; // start sending data at 100s
-
+  ////throuput
+    int totalPackets = TotalTime-1;
+  double interval = 1.0; 
+  Time interPacketInterval = Seconds (interval);
+////
 
   //mobility parameters
   double pauseTime = 0.0;
@@ -218,7 +254,17 @@ main (int argc, char *argv[])
           apps1.Stop (Seconds (dataTime + j * randomStartTime));
         }
     }
-
+    ////
+    TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+  Ptr<Socket> recvSink = Socket::CreateSocket (adhocNodes.Get (nWifis-1), tid);
+  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 8080);
+  recvSink->Bind (local);
+  recvSink->SetRecvCallback (MakeCallback (&ReceivePacket));
+    ////through
+     Ptr<Socket> source = Socket::CreateSocket (adhocNodes.Get (0), tid);
+  InetSocketAddress remote = InetSocketAddress (allInterfaces.GetAddress (nWifis-1,0), 8080);
+  source->Connect (remote);
+////
     AnimationInterface anim(animFile);
     for (uint32_t i = 0; i < nWifis; ++i)
       {
@@ -228,15 +274,26 @@ main (int argc, char *argv[])
       anim.EnablePacketMetadata();
 
       anim.EnableIpv4L3ProtocolCounters(Seconds(0),Seconds(600));
-
+  ////
+  Simulator::Schedule (Seconds (1), &GenerateTraffic, source, packetSize, totalPackets, interPacketInterval);
+////
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Stop (Seconds (TotalTime));
   wifiPhy.EnablePcapAll("dsr115f_rdtp");
-  FlowMonitorHelper flowmon;
-  Ptr<FlowMonitor> monitor = flowmon.InstallAll ();
-  
+  ////flow
+  Ptr<FlowMonitor> flowmon;
+  FlowMonitorHelper flowmonHelper;
+  flowmon = flowmonHelper.InstallAll ();
+  ////
   Simulator::Run ();
-
+  ////flow
+  flowmon->SetAttribute("DelayBinWidth", DoubleValue(0.01));
+  flowmon->SetAttribute("JitterBinWidth", DoubleValue(0.01));
+  flowmon->SetAttribute("PacketSizeBinWidth", DoubleValue(1));
+  flowmon->CheckForLostPackets();
+  flowmon->SerializeToXmlFile("scratch/dsr-flow.xml", true, true);
+////
+/*
   monitor->CheckForLostPackets ();
   Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier> (flowmon.GetClassifier ());
   FlowMonitor::FlowStatsContainer stats = monitor->GetFlowStats ();
@@ -255,5 +312,13 @@ main (int argc, char *argv[])
       std::cout << "  Rx Bytes:   " << i->second.rxBytes << "\n";
       std::cout << "  Throughput: " << i->second.rxBytes * 8.0 / 9.0 / 1000 / 1000  << " Mbps\n";
     }
+    */
+    
+  ////
+  std::cout<<"\n\n***** OUTPUT *****\n\n";
+  std::cout<<"Total Packets sent = "<<packetsSent<<std::endl;
+  std::cout<<"Total Packets received = "<<packetsReceived<<std::endl;
+  std::cout<<"Packet delivery ratio = "<<(float)(packetsReceived/packetsSent)*100<<" %"<<std::endl;
+  ////
   Simulator::Destroy ();
 }

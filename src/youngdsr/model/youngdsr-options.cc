@@ -83,10 +83,10 @@ std::vector<std::vector<u_int32_t>>bk;
 //u_int32_t sendtomcount = 0;
 double perc = 0.25;
 
-#define fname "route.txt"
+////#define fname "route.txt"
 
 using namespace std;
-std::ofstream outputfile(fname);
+//std::ofstream outputfile(fname);
 //vector<u_int32_t> busymap;
 
 namespace ns3 {
@@ -1531,10 +1531,10 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
   //bk2=mk->getvaluebk2();
   for(size_t j = 0; j < 51; j++){
     if( !bk[j].empty() ) {
-    for (size_t i = 0; i < bk[j].size(); i++) {
-      cout<<j<< " bksize"<<bk[j][i] << '\n';
+      for (size_t i = 0; i < bk[j].size(); i++) {
+        cout<<j<< " bksize"<<bk[j][i] << '\n';
+      }
     }
-  }
   }
   if( !bk[myid].empty() ) {
     for (size_t i = 0; i < bk[myid].size(); i++) {

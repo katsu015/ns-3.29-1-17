@@ -92,9 +92,9 @@ std::ofstream outputfile2(fname);
 */
 
 std::vector<std::vector<u_int32_t>>bk2;
-#define fname "route.txt"
+////#define fname "route.txt"
 
-std::ofstream outputfile2(fname);
+//std::ofstream outputfile2(fname);
 
 namespace ns3 {
 
@@ -444,6 +444,7 @@ YoungdsrRouting::NotifyNewAggregate ()
 
 void YoungdsrRouting::Start ()
 {
+  
   NS_LOG_FUNCTION (this << "Start DSR Routing protocol");
 
   NS_LOG_INFO ("The number of network queues " << m_numPriorityQueues);
@@ -1188,6 +1189,7 @@ outputfile2 << Simulator::Now ().GetMicroSeconds () <<
 void
 YoungdsrRouting::PacketNewRoute (Ptr<Packet> packet,
                             Ipv4Address source,
+
                             Ipv4Address destination,
                             uint8_t protocol)
 {
@@ -1796,6 +1798,19 @@ YoungdsrRouting::SendRealDown (YoungdsrNetworkQueueEntry & newEntry)
 void
 YoungdsrRouting::SendPacketFromBuffer (YoungdsrOptionSRHeader const &sourceRoute, Ipv4Address nextHop, uint8_t protocol)
 {
+  ////
+  Ptr<MacLow> mk;
+  bk2 = mk->getvaluebk();
+ // u_int32_t myid2 = GetIDfromIP (m_mainAddress)+1;
+  //bk2=mk->getvaluebk2();
+  for(size_t j = 0; j < 51; j++){
+    if( !bk2[j].empty() ) {
+      for (size_t i = 0; i < bk2[j].size(); i++) {
+        std::cout<<j<< " bksize routing"<<bk2[j][i] << '\n';
+      }
+    }
+  }
+  ////
   NS_LOG_FUNCTION (this << nextHop << (uint32_t)protocol);
   NS_ASSERT_MSG (!m_downTarget.IsNull (), "Error, YoungdsrRouting cannot send downward");
 
@@ -2481,6 +2496,19 @@ YoungdsrRouting::ScheduleNetworkPacketRetry (YoungdsrMaintainBuffEntry & mb,
                                         bool isFirst,
                                         uint8_t protocol)
 {
+  ////
+  Ptr<MacLow> mk;
+  bk2 = mk->getvaluebk();
+ // u_int32_t myid2 = GetIDfromIP (m_mainAddress)+1;
+  //bk2=mk->getvaluebk2();
+  for(size_t j = 0; j < 51; j++){
+    if( !bk2[j].empty() ) {
+      for (size_t i = 0; i < bk2[j].size(); i++) {
+        std::cout<<j<< " retry routing"<<bk2[j][i] << '\n';
+      }
+    }
+  }
+  ////
   ////packetretry
   Ptr<Packet> p = Create<Packet> ();
   Ptr<Packet> youngdsrP = Create<Packet> ();
@@ -2634,6 +2662,19 @@ void
 YoungdsrRouting::PassiveScheduleTimerExpire  (YoungdsrMaintainBuffEntry & mb,
                                          uint8_t protocol)
 {
+  ////
+  Ptr<MacLow> mk;
+  bk2 = mk->getvaluebk();
+ // u_int32_t myid2 = GetIDfromIP (m_mainAddress)+1;
+  //bk2=mk->getvaluebk2();
+  for(size_t j = 0; j < 51; j++){
+    if( !bk2[j].empty() ) {
+      for (size_t i = 0; i < bk2[j].size(); i++) {
+        std::cout<<j<< " passive schedule timer"<<bk2[j][i] << '\n';
+      }
+    }
+  }
+  ////
   NS_LOG_FUNCTION (this << (uint32_t)protocol);
   Ipv4Address nextHop = mb.GetNextHop ();
   Ptr<const Packet> packet = mb.GetPacket ();

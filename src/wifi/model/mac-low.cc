@@ -53,7 +53,7 @@
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
 
-#define fname "route.txt"
+//#define fname "route.txt"
 
 using namespace std;
 
@@ -68,7 +68,7 @@ u_int32_t key1,key2,key3,Threshold=0;
 std::vector<std::vector<std::vector<u_int32_t>> > Threshold_list(51,vector<vector<u_int32_t>>(51,vector<u_int32_t>(0)));
 
 
-std::ofstream outputfile(fname);
+//std::ofstream outputfile(fname);
 
 namespace ns3 {
 
