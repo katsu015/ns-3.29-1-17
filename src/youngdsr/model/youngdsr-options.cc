@@ -1592,6 +1592,7 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
               if (bk[myid][*it] == psourceid) {
                 // 削除された要素の次を指すイテレータが返される。
                 it = bk[myid].erase(it);
+              
 
                 cout <<myid<<" it's busy not bh " <<psourceid<< '\n';
                 ////迂回開始
@@ -1611,7 +1612,7 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
    ////無差別受信
   if (isPromisc)
     {
-      cout<<myid<< "We process promiscuous receipt data packet" << '\n';
+      //cout<<myid<< "We process promiscuous receipt data packet" << '\n';
       NS_LOG_LOGIC ("We process promiscuous receipt data packet");
       if (ContainAddressAfter (ipv4Address, destAddress, nodeList))
         {
@@ -1672,7 +1673,7 @@ uint8_t YoungdsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> youngdsrP, Ip
               if(bk[myid][i] == psourceid)
               {
                 ////ukai
-                cout <<myid<<" it's busy not bh " <<psourceid<< '\n';
+                cout <<myid<<" it's busy not bh " <<psourceid <<destAddress << '\n';
                 ////迂回開始
                 
 

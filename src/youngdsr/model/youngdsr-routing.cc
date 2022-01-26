@@ -1163,7 +1163,7 @@ bool YoungdsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> p
                         " with source IP " << ipv4Header.GetSource () <<
                         " and destination IP " << ipv4Header.GetDestination () <<
                         " and packet : " << *pktMinusYoungdsrHdr);
-std::cout <<" overhearing packet PID: " << pktMinusIpHdr->GetUid () << '\n';
+//std::cout <<" overhearing packet PID: " << pktMinusIpHdr->GetUid () << '\n';
 //if(ipv4Header.GetDestination () != GetIPfromMAC (Mac48Address::ConvertFrom (to))){
 /*
 outputfile2 << Simulator::Now ().GetMicroSeconds () <<
@@ -1890,6 +1890,8 @@ YoungdsrRouting::SendPacketFromBuffer (YoungdsrOptionSRHeader const &sourceRoute
 
               if (m_linkAck)
                 {
+                  ////
+                  std::cout <<m_mainAddress<< "using link acknowledgment"<<'\n';
                   ScheduleLinkPacketRetry (newEntry, protocol);
                 }
               else
@@ -1917,6 +1919,7 @@ YoungdsrRouting::SendPacketFromBuffer (YoungdsrOptionSRHeader const &sourceRoute
         }
       else
         {
+          std::cout << "All queued packets are out-dated for the destination in send buffer"<<'\n';
           NS_LOG_LOGIC ("All queued packets are out-dated for the destination in send buffer");
         }
     }
@@ -1925,6 +1928,8 @@ YoungdsrRouting::SendPacketFromBuffer (YoungdsrOptionSRHeader const &sourceRoute
    */
   else if (m_errorBuffer.Find (destination))
     {
+
+      std::cout << "宛先のパケットが見つかった"<<'\n';
       YoungdsrErrorBuffEntry entry;
       if (m_errorBuffer.Dequeue (destination, entry))
         {
@@ -2464,6 +2469,7 @@ void
 YoungdsrRouting::SchedulePassivePacketRetry (YoungdsrMaintainBuffEntry & mb,
                                         uint8_t protocol)
 {
+  ////passive ack
   NS_LOG_FUNCTION (this << (uint32_t)protocol);
 
   Ptr<Packet> p = mb.GetPacket ()->Copy ();
@@ -2481,9 +2487,11 @@ YoungdsrRouting::SchedulePassivePacketRetry (YoungdsrMaintainBuffEntry & mb,
 
   if (m_passiveAckTimer.find (passiveKey) == m_passiveAckTimer.end ())
     {
+      ////passive ack timer cancel
       Timer timer (Timer::CANCEL_ON_DESTROY);
       m_passiveAckTimer[passiveKey] = timer;
     }
+    std::cout <<"The passive acknowledgment option for data packet"<<'\n';
   NS_LOG_DEBUG ("The passive acknowledgment option for data packet");
   m_passiveAckTimer[passiveKey].SetFunction (&YoungdsrRouting::PassiveScheduleTimerExpire, this);
   m_passiveAckTimer[passiveKey].Remove ();
@@ -2615,6 +2623,18 @@ void
 YoungdsrRouting::LinkScheduleTimerExpire  (YoungdsrMaintainBuffEntry & mb,
                                       uint8_t protocol)
 {
+   ////
+  Ptr<MacLow> mk;
+  bk2 = mk->getvaluebk();
+  u_int32_t myid2 = GetIDfromIP (m_mainAddress)+1;
+  //bk2=mk->getvaluebk2();
+  for(size_t j = 0; j < 51; j++){
+    if( !bk2[j].empty() ) {
+      for (size_t i = 0; i < bk2[j].size(); i++) {
+        std::cout<<j<< " linkScheduleTimerExpire"<<bk2[j][i] << '\n';
+      }
+    }
+  }
   NS_LOG_FUNCTION (this << (uint32_t)protocol);
   Ipv4Address nextHop = mb.GetNextHop ();
   Ptr<const Packet> packet = mb.GetPacket ();
@@ -2645,6 +2665,14 @@ YoungdsrRouting::LinkScheduleTimerExpire  (YoungdsrMaintainBuffEntry & mb,
     }
   else
     {
+      ////
+      if( !bk2[myid2].empty() ) {
+          std::cout<<myid2<< lk.m_source<< " bh attack //" << lk.m_destination<< '\n';
+        
+      }
+       ////
+        std::cout<< "bh attack //" << '\n';
+      
       NS_LOG_INFO ("We need to send error messages now");
 
       // Delete all the routes including the links
@@ -2705,6 +2733,8 @@ YoungdsrRouting::PassiveScheduleTimerExpire  (YoungdsrMaintainBuffEntry & mb,
     }
   else
     {
+       ////
+        std::cout<< " PassiveScheduleTimerExpire ////" << '\n';
       // This is the first network acknowledgement retry
       // Cancel the passive packet timer now and remove maintenance buffer entry for it
       CancelPassivePacketTimer (mb);
@@ -2724,6 +2754,10 @@ void
 YoungdsrRouting::NetworkScheduleTimerExpire  (YoungdsrMaintainBuffEntry & mb,
                                          uint8_t protocol)
 {
+
+  ////
+        std::cout<< " NetworkScheduleTimerExpire" << '\n';
+      
   Ptr<Packet> p = mb.GetPacket ()->Copy ();
   Ipv4Address source = mb.GetSrc ();
   Ipv4Address nextHop = mb.GetNextHop ();
@@ -2741,6 +2775,8 @@ YoungdsrRouting::NetworkScheduleTimerExpire  (YoungdsrMaintainBuffEntry & mb,
 
   if (m_sendRetries >= m_maxMaintRexmt)
     {
+
+        std::cout<< " max maintrexmt " << '\n';
       // Delete all the routes including the links
       m_routeCache->DeleteAllRoutesIncludeLink (m_mainAddress, nextHop, m_mainAddress);
       /*
