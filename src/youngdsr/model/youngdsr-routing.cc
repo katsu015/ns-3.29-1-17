@@ -1024,6 +1024,7 @@ void YoungdsrRouting::CheckSendBuffer ()
                   m_addressForwardCnt[networkKey] = 0;
                   m_passiveCnt[passiveKey] = 0;
                   m_linkCnt[linkKey] = 0;
+                  ////linkack = false is passive ack
 
                   if (m_linkAck)
                     {
@@ -2852,10 +2853,13 @@ YoungdsrRouting::ForwardPacket (Ptr<const Packet> packet,
 
       if (m_linkAck)
         {
+          std::cout <<"Not using link acknowledgmen /"<<'\n';
           ScheduleLinkPacketRetry (newEntry, protocol);
         }
       else
         {
+
+          std::cout <<"Not using link acknowledgmen //"<<'\n';
           NS_LOG_LOGIC ("Not using link acknowledgment");
           if (nextHop != targetAddress)
             {

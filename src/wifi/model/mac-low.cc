@@ -803,7 +803,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
               key1=m_self.m_address[5];
               key2=hdr.GetAddr1 ().m_address[5];
               key3=hdr.GetAddr2 ().m_address[5];
-              cout << key1<<"promisc source =" << key2 <<" to "<< key3 <<"\n";
+              //cout << key1<<"promisc source =" << key2 <<" to "<< key3 <<"\n";
               if (key2 != 255) {
                 if (Threshold_list[key1][key2].empty()) {
                   Threshold_list[key1][key2].push_back(key3);
